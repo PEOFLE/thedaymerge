@@ -19,4 +19,4 @@ samples, guidance on mobile development, and a full API reference.
 
 # thedaymerge
 
-ksh_test hihihi
+# hi!

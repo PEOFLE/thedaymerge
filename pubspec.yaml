@@ -30,10 +30,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  image_picker: ^1.0.4          # 이미지 선택/촬영
+  google_mlkit_text_recognition: ^0.11.0 # OCR (텍스트 인식)
+  http: ^1.1.0                  # API 통신
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

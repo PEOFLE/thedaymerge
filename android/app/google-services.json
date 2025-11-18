@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "139634558424",
+    "project_id": "thedaymerge-54b72",
+    "storage_bucket": "thedaymerge-54b72.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139634558424:android:a75128662a7c76a3c49ead",
+        "android_client_info": {
+          "package_name": "com.example.ai_calendar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139634558424:android:7f1ad3eaffc0c185c49ead",
+        "android_client_info": {
+          "package_name": "com.thedaymerge.thedaymerge"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

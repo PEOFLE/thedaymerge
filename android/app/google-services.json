@@ -1,40 +1,112 @@
 {
   "project_info": {
-    "project_number": "920858695792",
-    "project_id": "tdm2-13be0",
-    "storage_bucket": "tdm2-13be0.firebasestorage.app"
+    "project_number": "139634558424",
+    "project_id": "thedaymerge-54b72",
+    "storage_bucket": "thedaymerge-54b72.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:920858695792:android:0ed719ea762bcdf8a07cb5",
+        "mobilesdk_app_id": "1:139634558424:android:faea696cf80b06e9c49ead",
         "android_client_info": {
           "package_name": "com.PEOFLE.thedaymerge"
         }
       },
       "oauth_client": [
         {
-          "client_id": "920858695792-oi7qgm83dtleg0jn088mildudmsdpok1.apps.googleusercontent.com",
+          "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA_kXhZm2JVfRKdQHlAuUxfY7No7uILGfI"
+          "current_key": "AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "920858695792-oi7qgm83dtleg0jn088mildudmsdpok1.apps.googleusercontent.com",
+              "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "920858695792-kvl14jmv6v710v3e5tst7bfjftsb8dtc.apps.googleusercontent.com",
+              "client_id": "139634558424-5com7req0tkm4dotdcbs2l3uur2o24kf.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.thedaymerge.thedaymerge"
+                "bundle_id": "com.example.aiCalendar"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139634558424:android:a75128662a7c76a3c49ead",
+        "android_client_info": {
+          "package_name": "com.example.ai_calendar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "139634558424-5com7req0tkm4dotdcbs2l3uur2o24kf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aiCalendar"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139634558424:android:7f1ad3eaffc0c185c49ead",
+        "android_client_info": {
+          "package_name": "com.thedaymerge.thedaymerge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "139634558424-5com7req0tkm4dotdcbs2l3uur2o24kf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aiCalendar"
               }
             }
           ]

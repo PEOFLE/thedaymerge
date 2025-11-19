@@ -44,41 +44,41 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA_kXhZm2JVfRKdQHlAuUxfY7No7uILGfI',
-    appId: '1:920858695792:android:0ed719ea762bcdf8a07cb5',
-    messagingSenderId: '920858695792',
-    projectId: 'tdm2-13be0',
-    storageBucket: 'tdm2-13be0.firebasestorage.app',
+    apiKey: 'AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI',
+    appId: '1:139634558424:android:faea696cf80b06e9c49ead',
+    messagingSenderId: '139634558424',
+    projectId: 'thedaymerge-54b72',
+    storageBucket: 'thedaymerge-54b72.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA7nDVtuCqLHNScpFAhd8ZFtZDCuTxVY4k',
-    appId: '1:920858695792:ios:f98ce12da8799996a07cb5',
-    messagingSenderId: '920858695792',
-    projectId: 'tdm2-13be0',
-    storageBucket: 'tdm2-13be0.firebasestorage.app',
-    iosClientId: '920858695792-kvl14jmv6v710v3e5tst7bfjftsb8dtc.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDim3URWw-28aahG_4vPAx-y9EXzs4Dpi0',
+    appId: '1:139634558424:ios:a5466aecd9256896c49ead',
+    messagingSenderId: '139634558424',
+    projectId: 'thedaymerge-54b72',
+    storageBucket: 'thedaymerge-54b72.firebasestorage.app',
+    iosClientId: '139634558424-fl2jdqe7je55lrvemlm3idr1vie1mffl.apps.googleusercontent.com',
     iosBundleId: 'com.thedaymerge.thedaymerge',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyA7nDVtuCqLHNScpFAhd8ZFtZDCuTxVY4k',
-    appId: '1:920858695792:ios:f98ce12da8799996a07cb5',
-    messagingSenderId: '920858695792',
-    projectId: 'tdm2-13be0',
-    storageBucket: 'tdm2-13be0.firebasestorage.app',
-    iosClientId: '920858695792-kvl14jmv6v710v3e5tst7bfjftsb8dtc.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDim3URWw-28aahG_4vPAx-y9EXzs4Dpi0',
+    appId: '1:139634558424:ios:a5466aecd9256896c49ead',
+    messagingSenderId: '139634558424',
+    projectId: 'thedaymerge-54b72',
+    storageBucket: 'thedaymerge-54b72.firebasestorage.app',
+    iosClientId: '139634558424-fl2jdqe7je55lrvemlm3idr1vie1mffl.apps.googleusercontent.com',
     iosBundleId: 'com.thedaymerge.thedaymerge',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDZ4iXnbk6KvxcOO-pIkftz8fGUemGTz2U',
-    appId: '1:920858695792:web:3dfa0ea3552b8a31a07cb5',
-    messagingSenderId: '920858695792',
-    projectId: 'tdm2-13be0',
-    authDomain: 'tdm2-13be0.firebaseapp.com',
-    storageBucket: 'tdm2-13be0.firebasestorage.app',
-    measurementId: 'G-JP4ET949FP',
+    apiKey: 'AIzaSyDJBRdftAXjmo0js4Hobykvfmu0R9bo92s',
+    appId: '1:139634558424:web:5ae59f1ce3dc6f56c49ead',
+    messagingSenderId: '139634558424',
+    projectId: 'thedaymerge-54b72',
+    authDomain: 'thedaymerge-54b72.firebaseapp.com',
+    storageBucket: 'thedaymerge-54b72.firebasestorage.app',
+    measurementId: 'G-L65WSBYYN9',
   );
 
 }

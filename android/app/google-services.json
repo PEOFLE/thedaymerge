@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "920858695792",
+    "project_id": "tdm2-13be0",
+    "storage_bucket": "tdm2-13be0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920858695792:android:0ed719ea762bcdf8a07cb5",
+        "android_client_info": {
+          "package_name": "com.PEOFLE.thedaymerge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "920858695792-oi7qgm83dtleg0jn088mildudmsdpok1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_kXhZm2JVfRKdQHlAuUxfY7No7uILGfI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "920858695792-oi7qgm83dtleg0jn088mildudmsdpok1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "920858695792-kvl14jmv6v710v3e5tst7bfjftsb8dtc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.thedaymerge.thedaymerge"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

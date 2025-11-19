@@ -30,8 +30,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.7.0
+
   image_picker: ^1.0.4          # 이미지 선택/촬영
-  google_mlkit_text_recognition: ^0.11.0 # OCR (텍스트 인식)
+  google_mlkit_text_recognition: ^0.15.0 # OCR (텍스트 인식)
+  google_mlkit_commons: ^0.11.0
   http: ^1.1.0                  # API 통신
 
   # The following adds the Cupertino Icons font to your application.

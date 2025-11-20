@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:139634558424:android:a75128662a7c76a3c49ead",
+        "mobilesdk_app_id": "1:139634558424:android:faea696cf80b06e9c49ead",
         "android_client_info": {
-          "package_name": "com.example.ai_calendar"
+          "package_name": "com.PEOFLE.thedaymerge"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI"
@@ -20,7 +25,55 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "139634558424-5com7req0tkm4dotdcbs2l3uur2o24kf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aiCalendar"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139634558424:android:a75128662a7c76a3c49ead",
+        "android_client_info": {
+          "package_name": "com.example.ai_calendar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "139634558424-5com7req0tkm4dotdcbs2l3uur2o24kf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aiCalendar"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +84,12 @@
           "package_name": "com.thedaymerge.thedaymerge"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI"
@@ -39,7 +97,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "139634558424-t95krnh4pt4kre5qlckfl6e1sjigrb58.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "139634558424-5com7req0tkm4dotdcbs2l3uur2o24kf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aiCalendar"
+              }
+            }
+          ]
         }
       }
     }

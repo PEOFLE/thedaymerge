@@ -27,7 +27,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -40,19 +43,9 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDJBRdftAXjmo0js4Hobykvfmu0R9bo92s',
-    appId: '1:139634558424:web:826f2bb0881fc62ec49ead',
-    messagingSenderId: '139634558424',
-    projectId: 'thedaymerge-54b72',
-    authDomain: 'thedaymerge-54b72.firebaseapp.com',
-    storageBucket: 'thedaymerge-54b72.firebasestorage.app',
-    measurementId: 'G-JEMJHNGRXT',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyD3CCPYXS-8eihEexzScyM8tU284u3O0TI',
-    appId: '1:139634558424:android:7f1ad3eaffc0c185c49ead',
+    appId: '1:139634558424:android:faea696cf80b06e9c49ead',
     messagingSenderId: '139634558424',
     projectId: 'thedaymerge-54b72',
     storageBucket: 'thedaymerge-54b72.firebasestorage.app',
@@ -64,6 +57,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '139634558424',
     projectId: 'thedaymerge-54b72',
     storageBucket: 'thedaymerge-54b72.firebasestorage.app',
+    iosClientId: '139634558424-fl2jdqe7je55lrvemlm3idr1vie1mffl.apps.googleusercontent.com',
     iosBundleId: 'com.thedaymerge.thedaymerge',
   );
 
@@ -73,10 +67,11 @@ class DefaultFirebaseOptions {
     messagingSenderId: '139634558424',
     projectId: 'thedaymerge-54b72',
     storageBucket: 'thedaymerge-54b72.firebasestorage.app',
+    iosClientId: '139634558424-fl2jdqe7je55lrvemlm3idr1vie1mffl.apps.googleusercontent.com',
     iosBundleId: 'com.thedaymerge.thedaymerge',
   );
 
-  static const FirebaseOptions windows = FirebaseOptions(
+  static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyDJBRdftAXjmo0js4Hobykvfmu0R9bo92s',
     appId: '1:139634558424:web:5ae59f1ce3dc6f56c49ead',
     messagingSenderId: '139634558424',
@@ -85,4 +80,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'thedaymerge-54b72.firebasestorage.app',
     measurementId: 'G-L65WSBYYN9',
   );
+
 }

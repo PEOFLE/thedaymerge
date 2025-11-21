@@ -4,13 +4,14 @@ import 'schedule_list_item.dart';
 
 class ScheduleList extends StatelessWidget {
   final List<Schedule> schedules;
-  // 🔥 어떤 스케줄을 삭제할지 알려주는 함수
-  final Function(Schedule) onRemove;
+  final Function(Schedule) onItemTap; // 상세 보기 (진짜 일정용)
+  final Function(Schedule) onRemove;  // 바로 삭제 (예시용)
 
   const ScheduleList({
     super.key,
     required this.schedules,
-    required this.onRemove, // 필수값
+    required this.onItemTap,
+    required this.onRemove,
   });
 
   @override
@@ -31,8 +32,8 @@ class ScheduleList extends StatelessWidget {
         final schedule = schedules[index];
         return ScheduleListItem(
           schedule: schedule,
-          // 🔥 삭제 버튼 누르면 -> 부모(CalendarScreen)에게 "이거 지워줘!"라고 요청
-          onDelete: () => onRemove(schedule),
+          onTap: () => onItemTap(schedule), // 클릭 시
+          onDelete: () => onRemove(schedule), // 삭제 버튼 클릭 시
         );
       },
     );

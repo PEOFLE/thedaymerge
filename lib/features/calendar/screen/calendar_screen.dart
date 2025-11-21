@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../models/schedule.dart';
+import '../../../theme/app_colors.dart';
 import '../widgets/schedule_list.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -15,37 +18,67 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  // 더미 데이터
-  final List<Schedule> _schedules = [
-    Schedule(
-      title: '팀 미팅',
-      startTime: DateTime(2025, 12, 5, 14, 0),
-      endTime: DateTime(2025, 12, 5, 15, 0),
-      reminder: '30분 전',
-      isAI: true,
-    ),
-    Schedule(
-      title: '프로젝트 마감',
-      startTime: DateTime(2025, 12, 15, 18, 0),
-      endTime: DateTime(2025, 12, 15, 19, 0),
-      reminder: '1일 전',
-    ),
-    Schedule(
-      title: '치과 예약',
-      startTime: DateTime(2025, 12, 20, 10, 0),
-      endTime: DateTime(2025, 12, 20, 11, 0),
-      reminder: '1일 전',
-      isAI: true,
-    ),
-  ];
+  List<Schedule> _schedules = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstRun();
+  }
+
+  Future<void> _checkFirstRun() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isFirstRun = prefs.getBool('isFirstRun') ?? true;
+
+    if (isFirstRun) {
+      // 🔥 예시 일정 1개만 추가
+      setState(() {
+        _schedules = [
+          Schedule(
+            title: '팀 미팅 (예시)',
+            startTime: DateTime.now().add(const Duration(hours: 2)),
+            endTime: DateTime.now().add(const Duration(hours: 3)),
+            reminder: '30분 전',
+            isAI: true,
+          ),
+        ];
+        _isLoading = false;
+      });
+      // "첫 방문 아님"으로 저장
+      await prefs.setBool('isFirstRun', false);
+    } else {
+      // 두 번째 방문부터는 빈 리스트
+      setState(() {
+        _schedules = [];
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _removeSchedule(Schedule schedule) {
+    setState(() {
+      _schedules.remove(schedule);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('일정이 삭제되었습니다.'),
+        duration: Duration(milliseconds: 1500),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('AI 일정 관리'),
+        backgroundColor: AppColors.background,
       ),
-      body: Column(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
         children: [
           TableCalendar(
             locale: 'ko_KR',
@@ -56,8 +89,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
             headerStyle: HeaderStyle(
               titleCentered: true,
               formatButtonVisible: false,
-              titleTextStyle: const TextStyle(fontSize: 18.0),
+              titleTextStyle: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               titleTextFormatter: (date, locale) => DateFormat.yMMMM(locale).format(date),
+              leftChevronIcon: const Icon(Icons.chevron_left, color: AppColors.primary),
+              rightChevronIcon: const Icon(Icons.chevron_right, color: AppColors.primary),
+            ),
+            calendarStyle: const CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              selectedDecoration: BoxDecoration(
+                color: AppColors.textBlack,
+                shape: BoxShape.circle,
+              ),
+              todayTextStyle: TextStyle(color: Colors.white),
             ),
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
@@ -71,7 +117,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           const SizedBox(height: 16),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -81,23 +127,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
                 Text(
                   '${_schedules.length}개',
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 8),
-          // [수정됨] Expanded로 감싸서 남은 공간을 모두 차지하게 함
           Expanded(
-            child: ScheduleList(schedules: _schedules),
+            child: ScheduleList(
+              schedules: _schedules,
+              onRemove: _removeSchedule,
+            ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // 일정 추가 다이얼로그 (추후 구현)
+          // TODO: 일정 추가 기능
         },
-        child: const Icon(Icons.add),
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

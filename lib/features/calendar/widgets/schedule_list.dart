@@ -4,8 +4,14 @@ import 'schedule_list_item.dart';
 
 class ScheduleList extends StatelessWidget {
   final List<Schedule> schedules;
+  // 🔥 어떤 스케줄을 삭제할지 알려주는 함수
+  final Function(Schedule) onRemove;
 
-  const ScheduleList({super.key, required this.schedules});
+  const ScheduleList({
+    super.key,
+    required this.schedules,
+    required this.onRemove, // 필수값
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +25,15 @@ class ScheduleList extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       itemCount: schedules.length,
       itemBuilder: (context, index) {
-        // ScheduleListItem 위젯 사용
-        return ScheduleListItem(schedule: schedules[index]);
+        final schedule = schedules[index];
+        return ScheduleListItem(
+          schedule: schedule,
+          // 🔥 삭제 버튼 누르면 -> 부모(CalendarScreen)에게 "이거 지워줘!"라고 요청
+          onDelete: () => onRemove(schedule),
+        );
       },
     );
   }

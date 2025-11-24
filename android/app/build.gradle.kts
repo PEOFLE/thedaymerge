@@ -1,8 +1,5 @@
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
-    id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
     id("kotlin-android")
     id("com.google.gms.google-services")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -10,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.PEOFLE.thedaymerge"
+    namespace = "com.thedaymerge.thedaymerge"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -45,4 +42,7 @@ android {
 
 flutter {
     source = "../.."
+}
+dependencies {
+    implementation("com.google.mlkit:text-recognition-korean:16.0.0")
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../models/schedule.dart'; // 모델 import
-import '../../../theme/app_colors.dart'; // 컬러 import
+import '../../../models/schedule.dart';
+import '../../../theme/app_colors.dart';
 
 class ScheduleListItem extends StatelessWidget {
   final Schedule schedule;
@@ -9,18 +9,15 @@ class ScheduleListItem extends StatelessWidget {
   const ScheduleListItem({super.key, required this.schedule});
 
   String _formatDateTime(DateTime start, DateTime end) {
-    // 예: 12월 5일 오후 02:00 - 오후 03:00
-    // 날짜 포맷이 필요하므로 intl 패키지 사용
     final DateFormat datePart = DateFormat('M월 d일', 'ko_KR');
     final DateFormat timePart = DateFormat('a hh:mm', 'ko_KR');
-
     return '${datePart.format(start)} ${timePart.format(start)} - ${timePart.format(end)}';
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12.0), // 아이템 간 간격
+      margin: const EdgeInsets.only(bottom: 12.0),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
@@ -36,7 +33,7 @@ class ScheduleListItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 제목과 AI 태그
+          // 제목 및 AI 태그
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
+import '../controller/upload_controller.dart';
 
 class UploadScreen extends StatelessWidget {
   const UploadScreen({super.key});
@@ -30,9 +31,7 @@ class UploadScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             GestureDetector(
-              onTap: () {
-                // TODO: image_picker 를 사용하여 이미지 선택 로직 구현
-              },
+              onTap: () => handleUploadProcess(context),
               child: DottedBorder(
                 borderType: BorderType.RRect,
                 radius: const Radius.circular(12),

@@ -17,6 +17,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  // --- 상태 변수 ---
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 

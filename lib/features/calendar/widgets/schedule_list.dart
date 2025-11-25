@@ -4,8 +4,8 @@ import 'schedule_list_item.dart';
 
 class ScheduleList extends StatelessWidget {
   final List<Schedule> schedules;
-  final Function(Schedule) onItemTap; // 상세 보기 (클릭 시)
-  final Function(Schedule) onRemove;  // 삭제 (스와이프 또는 X버튼 클릭 시)
+  final Function(Schedule) onItemTap; // 클릭 시 (상세보기)
+  final Function(Schedule) onRemove;  // 삭제 시 (스와이프 완료)
 
   const ScheduleList({
     super.key,
@@ -31,34 +31,46 @@ class ScheduleList extends StatelessWidget {
       itemBuilder: (context, index) {
         final schedule = schedules[index];
 
-        // 🔥 [팀원 코드 반영] Dismissible로 감싸서 스와이프 기능 추가
+        // 🔥 [수정됨] Dismissible로 감싸서 스와이프 삭제 기능 추가
         return Dismissible(
-          // 각 아이템을 구분하는 고유 키 (시간_제목)
-          key: Key('${schedule.startTime}_${schedule.title}'),
-          direction: DismissDirection.endToStart, // 오른쪽 -> 왼쪽 스와이프만 허용
+          // 각 아이템을 구분하는 고유 키 (제목+시간)
+          key: ValueKey('${schedule.startTime}_${schedule.title}'),
 
-          // 스와이프 할 때 뒤에 보이는 빨간 배경 (휴지통)
+          // 오른쪽에서 왼쪽으로 밀 때만 삭제 허용
+          direction: DismissDirection.endToStart,
+
+          // 스와이프할 때 뒤에 보이는 배경 (빨간색 + 휴지통)
           background: Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.only(right: 20),
+            margin: const EdgeInsets.only(bottom: 12.0), // 카드 간격 맞춤
+            padding: const EdgeInsets.only(right: 20.0),
             alignment: Alignment.centerRight,
             decoration: BoxDecoration(
               color: Colors.redAccent,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16), // 카드 둥근 모서리 맞춤
             ),
-            child: const Icon(Icons.delete, color: Colors.white),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                    '삭제',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+                ),
+                SizedBox(width: 8),
+                Icon(Icons.delete, color: Colors.white),
+              ],
+            ),
           ),
 
-          // 스와이프가 끝났을 때 실행될 동작 -> onRemove 호출
+          // 스와이프가 끝났을 때 실행될 동작
           onDismissed: (direction) {
             onRemove(schedule);
           },
 
-          // 실제 보여지는 리스트 아이템 (기존 로직 유지)
+          // 실제 보여지는 리스트 아이템
           child: ScheduleListItem(
             schedule: schedule,
-            onTap: () => onItemTap(schedule), // 클릭 시 상세 보기
-            onDelete: () => onRemove(schedule), // (예시 일정용) X 버튼 클릭 시 삭제
+            onTap: () => onItemTap(schedule),
+            onDelete: () => onRemove(schedule), // (예시 일정용 X버튼 연결 유지)
           ),
         );
       },

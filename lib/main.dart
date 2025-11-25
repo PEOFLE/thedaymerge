@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
           .signInWithEmailAndPassword(email: email, password: pw);
 
       // 로그인 성공 시 AuthGate가 감지하여 자동으로 화면을 전환합니다.
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       _showError('로그인 실패: 아이디나 비밀번호를 확인해주세요.');
     } catch (e) {
       _showError('오류가 발생했습니다.');

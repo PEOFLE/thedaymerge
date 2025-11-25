@@ -142,20 +142,41 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   // ===========================================================================
-  // [Logic 4] 일정 삭제 및 기타 로직
-  // ===========================================================================
-  void _removeSchedule(Schedule schedule) {
+  // [Logic 4] 일정 삭제 (로컬 삭제 + 서버 삭제)
+  //   // ===================================ic 4] 일정 삭========================================
+  Future<void> _removeSchedule(Schedule schedule) async {
+    // 1. 화면에서 먼저 삭제 (반응속도 빠르게)
     setState(() {
       _allSchedules.remove(schedule);
       _updateVisibleSchedules();
     });
 
+    // 팝업 닫기
     if (!schedule.isExample && Navigator.canPop(context)) {
       Navigator.of(context).pop();
     }
 
+    // 2. 🔥 [핵심] 예시 데이터가 아니라면, 서버에서도 진짜로 삭제!
+    if (!schedule.isExample) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        try {
+          await deleteCalendarEventFromCloud(
+            userId: user.uid,
+            schedule: schedule,
+          );
+        } catch (e) {
+          // 혹시 실패하면 사용자에게 알림 (선택사항)
+          print("서버 삭제 실패: $e");
+        }
+      }
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('일정이 삭제되었습니다.'), duration: Duration(milliseconds: 1500)),
+      const SnackBar(
+        content: Text('일정이 삭제되었습니다.'),
+        duration: Duration(milliseconds: 1500),
+      ),
     );
   }
 

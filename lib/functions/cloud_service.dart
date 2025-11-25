@@ -107,3 +107,36 @@ Future<List<Schedule>> loadCalendarEventsFromCloud({
     return []; // 에러 나면 빈 리스트 반환
   }
 }
+
+// ... (기존 save, load 함수들 아래에 추가) ...
+
+// -----------------------------------------------------------------------------
+// [서버 삭제 함수] 🔥 추가된 부분
+// 설명: 특정 스케줄을 찾아 Firestore에서 영구 삭제
+// -----------------------------------------------------------------------------
+Future<void> deleteCalendarEventFromCloud({
+  required String userId,
+  required Schedule schedule,
+}) async {
+  final db = FirebaseFirestore.instance;
+  try {
+    final collectionRef = db
+        .collection('users')
+        .doc(userId)
+        .collection('calendar_data');
+
+    // 1. 저장할 때와 똑같은 규칙으로 ID를 재구성해서 찾음
+    String startString = schedule.startTime.toIso8601String();
+    String uniqueId = "${startString}_${schedule.title}";
+    uniqueId = uniqueId.replaceAll('/', '_');
+
+    // 2. 해당 문서 삭제
+    await collectionRef.doc(uniqueId).delete();
+
+    print("🗑️ 서버 삭제 완료: $uniqueId");
+
+  } catch (e) {
+    print("❌ 삭제 실패: $e");
+    throw Exception("삭제 중 오류 발생: $e");
+  }
+}

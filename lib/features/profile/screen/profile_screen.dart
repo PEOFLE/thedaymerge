@@ -8,19 +8,23 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🔥 현재 로그인한 사용자 정보 가져오기
+    // 현재 로그인한 사용자 정보 가져오기
     final User? user = FirebaseAuth.instance.currentUser;
 
-    // 가입일 포맷팅 (예: 2025.11.21)
+    // 가입일 포맷팅 (예: 2025.11.23)
     String creationDate = '정보 없음';
     if (user?.metadata.creationTime != null) {
-      creationDate = DateFormat('yyyy.MM.dd').format(user!.metadata.creationTime!);
+      // 🔥 [수정된 부분] .toLocal()을 추가하여 기기 설정(한국 시간)으로 변환
+      creationDate = DateFormat('yyyy.MM.dd').format(user!.metadata.creationTime!.toLocal());
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('프로필'),
-        backgroundColor: AppColors.background, // 배경색 일치
+        title: const Text(
+          '프로필',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: AppColors.background,
         elevation: 0,
       ),
       body: Padding(
@@ -45,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      user?.email ?? '게스트', // 이메일 표시
+                      user?.email ?? '게스트',
                       style: const TextStyle(color: AppColors.textGrey),
                     ),
                   ],
@@ -67,8 +71,8 @@ class ProfileScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildProfileRow('이메일', user?.email ?? '-'),
-                    _buildProfileRow('이름', user?.displayName ?? '사용자'), // 이름이 없으면 '사용자'
-                    _buildProfileRow('가입일', creationDate, isLast: true),
+                    _buildProfileRow('이름', user?.displayName ?? '사용자'),
+                    _buildProfileRow('가입일', creationDate, isLast: true), // 수정된 날짜 사용
                   ],
                 ),
               ),
@@ -82,14 +86,12 @@ class ProfileScreen extends StatelessWidget {
               height: 52,
               child: OutlinedButton.icon(
                 onPressed: () async {
-                  // 🔥 로그아웃 기능
                   await FirebaseAuth.instance.signOut();
-                  // AuthGate가 감지해서 자동으로 로그인 화면으로 이동합니다.
                 },
                 icon: const Icon(Icons.logout, size: 20),
                 label: const Text('로그아웃'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.redAccent, // 빨간색으로 경고 느낌
+                  foregroundColor: Colors.redAccent,
                   side: const BorderSide(color: Colors.redAccent),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

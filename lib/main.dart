@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                     size: 64, color: AppColors.primary),
                 const SizedBox(height: 24),
                 const Text(
-                  '다시 오신 것을 환영합니다!',
+                  '환영합니다!',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,

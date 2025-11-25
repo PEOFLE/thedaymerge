@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AI 일정 관리',
+      title: '그날머지?',
       theme: ThemeData(
         // AppColors를 사용하여 전체 테마 적용
         colorScheme: ColorScheme.fromSeed(

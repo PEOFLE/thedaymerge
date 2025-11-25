@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../models/schedule.dart';
 import '../../../functions/cloud_service.dart';
 import '../../../theme/app_colors.dart';
-
-// 위젯
 import '../widgets/schedule_list.dart';
 import '../widgets/add_schedule_dialog.dart';
 
@@ -20,12 +17,11 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  // --- 상태 변수 ---
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  List<Schedule> _allSchedules = [];     // 전체 일정 (마커 표시용)
-  List<Schedule> _visibleSchedules = []; // 리스트 표시용
+  List<Schedule> _allSchedules = [];
+  List<Schedule> _visibleSchedules = [];
   bool _isLoading = true;
 
   @override
@@ -36,18 +32,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _initializeData() async {
-    await _checkFirstRun(); // 1. 예시 데이터 체크
-    await _syncData();      // 2. 서버 데이터 가져오기
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // 1. 예시 데이터가 필요한지 서버에 물어보기 (User 기준)
+      await _checkAndLoadExample(user.uid);
+      // 2. 서버 데이터 가져오기
+      await _syncData(user.uid);
+    } else {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
-  // ===========================================================================
-  // [Logic 1] 첫 실행 체크 (예시 데이터)
-  // ===========================================================================
-  Future<void> _checkFirstRun() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool isFirstRun = prefs.getBool('isFirstRun') ?? true;
+  // 🔥 [수정된 Logic 1] 예시 일정 로직 (서버 연동)
+  Future<void> _checkAndLoadExample(String userId) async {
+    // 서버에서 "이 사람 예시 봤나요?" 확인
+    bool hasSeen = await checkTutorialStatus(userId);
 
-    if (isFirstRun) {
+    // 안 봤다면(false) 예시 일정 추가
+    if (!hasSeen) {
       if (mounted) {
         setState(() {
           _allSchedules.add(
@@ -57,40 +59,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
               endTime: DateTime.now().add(const Duration(hours: 3)),
               reminder: '30분 전',
               isAI: true,
-              isExample: true, // X 버튼 표시용 플래그
+              isExample: true, // X 버튼 표시
             ),
           );
           _updateVisibleSchedules();
         });
       }
-      await prefs.setBool('isFirstRun', false);
     }
   }
 
-  // ===========================================================================
   // [Logic 2] 데이터 동기화
-  // ===========================================================================
-  Future<void> _syncData() async {
+  Future<void> _syncData(String userId) async {
     if (!mounted) return;
 
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        if (mounted) setState(() => _isLoading = false);
-        return;
-      }
-
-      final List<Schedule> cloudSchedules = await loadCalendarEventsFromCloud(userId: user.uid);
+      final List<Schedule> cloudSchedules = await loadCalendarEventsFromCloud(userId: userId);
 
       if (mounted) {
         setState(() {
-          // 1. 기존에 있던 예시 데이터(isExample)는 유지
+          // 기존 예시 데이터(isExample)는 유지하고, 서버 데이터 병합
           final examples = _allSchedules.where((s) => s.isExample).toList();
-
-          // 2. 예시 데이터 + 서버에서 가져온 데이터 합치기
           _allSchedules = [...examples, ...cloudSchedules];
 
-          // 3. 화면 갱신
           _updateVisibleSchedules();
           _isLoading = false;
         });
@@ -101,37 +91,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  // ===========================================================================
   // [Logic 3] 일정 추가
-  // ===========================================================================
   Future<void> _addSchedule() async {
-    // 1. 팝업 띄우기
     final newSchedule = await showDialog<Schedule>(
       context: context,
       builder: (context) => AddScheduleDialog(selectedDate: _selectedDay ?? DateTime.now()),
     );
 
-    // 2. 입력값이 있다면
     if (newSchedule != null) {
-      // A. 화면에 즉시 반영 (UX 향상)
       setState(() {
         _allSchedules.add(newSchedule);
         _updateVisibleSchedules();
       });
 
-      // B. Firebase 서버에 저장
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         try {
-          // saveCalendarEventsToCloud 함수 파라미터(eventList)에 맞춰 전달
-          // Map으로 변환하지 않고, Schedule 객체를 리스트에 담아 보냅니다.
           await saveCalendarEventsToCloud(
             userId: user.uid,
-            eventList: [newSchedule], // parameter 이름: eventList
+            eventList: [newSchedule],
           );
         } catch (e) {
           print("서버 저장 실패: $e");
-          // 필요하다면 여기서 에러 처리 (예: 추가했던 일정 롤백)
         }
       }
 
@@ -141,42 +122,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  // ===========================================================================
-  // [Logic 4] 일정 삭제 (로컬 삭제 + 서버 삭제)
-  //   // ===================================ic 4] 일정 삭========================================
-  Future<void> _removeSchedule(Schedule schedule) async {
-    // 1. 화면에서 먼저 삭제 (반응속도 빠르게)
+  // [Logic 4] 일정 삭제 (예시 삭제 시 서버 기록!)
+  void _removeSchedule(Schedule schedule) async {
     setState(() {
       _allSchedules.remove(schedule);
       _updateVisibleSchedules();
     });
 
-    // 팝업 닫기
     if (!schedule.isExample && Navigator.canPop(context)) {
       Navigator.of(context).pop();
     }
 
-    // 2. 🔥 [핵심] 예시 데이터가 아니라면, 서버에서도 진짜로 삭제!
-    if (!schedule.isExample) {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        try {
-          await deleteCalendarEventFromCloud(
-            userId: user.uid,
-            schedule: schedule,
-          );
-        } catch (e) {
-          // 혹시 실패하면 사용자에게 알림 (선택사항)
-          print("서버 삭제 실패: $e");
-        }
-      }
+    final user = FirebaseAuth.instance.currentUser;
+
+    // 🔥 [핵심 추가] 예시 일정을 삭제했다면 -> 서버에 "나 이제 예시 봤음!" 기록 남기기
+    if (schedule.isExample && user != null) {
+      await markTutorialAsSeen(user.uid);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('일정이 삭제되었습니다.'),
-        duration: Duration(milliseconds: 1500),
-      ),
+      const SnackBar(content: Text('일정이 삭제되었습니다.'), duration: Duration(milliseconds: 1500)),
     );
   }
 
@@ -194,18 +159,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return _allSchedules.where((schedule) => isSameDay(schedule.startTime, day)).toList();
   }
 
-  // ===========================================================================
-  // [UI] 화면 구성
-  // ===========================================================================
+  // UI 구성 (기존과 동일)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          '그날머지?',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        centerTitle: false,
+      ),
       body: SafeArea(
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : Column(
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             _buildTableCalendar(),
             const SizedBox(height: 16),
             _buildDateHeader(),

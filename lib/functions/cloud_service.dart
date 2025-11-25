@@ -140,3 +140,29 @@ Future<void> deleteCalendarEventFromCloud({
     throw Exception("삭제 중 오류 발생: $e");
   }
 }
+
+// -----------------------------------------------------------------------------
+// [튜토리얼(예시) 상태 관리]
+// -----------------------------------------------------------------------------
+
+// 유저가 예시 일정을 이미 확인했는지(삭제했는지) 서버에서 확인
+Future<bool> checkTutorialStatus(String userId) async {
+  final db = FirebaseFirestore.instance;
+  // users 컬렉션의 해당 유저 문서 확인
+  final doc = await db.collection('users').doc(userId).get();
+
+  if (doc.exists && doc.data() != null) {
+    // 'tutorial_seen' 필드가 true면 이미 본 것임
+    return doc.data()!['tutorial_seen'] ?? false;
+  }
+  return false; // 문서가 없거나 필드가 없으면 안 본 것(false)
+}
+
+/// 유저가 예시 일정을 봤음(삭제함)을 서버에 영구 저장
+Future<void> markTutorialAsSeen(String userId) async {
+  final db = FirebaseFirestore.instance;
+  // users 컬렉션의 해당 유저 문서에 'tutorial_seen: true' 기록
+  await db.collection('users').doc(userId).set({
+    'tutorial_seen': true
+  }, SetOptions(merge: true)); // 기존 데이터(다른 정보)는 유지하고 병합
+}

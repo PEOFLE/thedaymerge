@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/cores/app_const_number.dart';
 import 'package:thedaymerge/features/auth/viewmodels/auth_viewmodel.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -9,16 +10,13 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Watch AuthViewModel to get current user data
     final authViewModel = context.watch<AuthViewModel>();
     final user = authViewModel.user;
 
-    // Formatting join date
     String? joinDateString;
     if (user?.joinDate != null) {
       joinDateString = DateFormat('yyyy.MM.dd').format(user!.joinDate!);
     }
-
     final userName = user?.name;
     final userEmail = user?.email;
 
@@ -29,37 +27,37 @@ class ProfilePage extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         title: const Text(
           "AI 일정 관리",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppConstNumber.kHeaderFontSize),
         ),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: AppConstNumber.kDefaultPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: AppConstNumber.kLargeRadius),
             const Text(
               "프로필",
               style: TextStyle(
-                fontSize: 22,
+                fontSize: AppConstNumber.kPageTitleFontSize,
                 fontWeight: FontWeight.bold,
                 color: AppColor.textBlack,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppConstNumber.kLargeRadius),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppConstNumber.kDefaultPadding),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                color: AppColor.white,
+                borderRadius: BorderRadius.circular(AppConstNumber.kLargeRadius),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
+                    color: AppColor.shadowColor,
+                    blurRadius: AppConstNumber.kShadowBlurRadius,
+                    offset: const Offset(0, AppConstNumber.kShadowOffsetY),
                   ),
                 ],
               ),
@@ -71,27 +69,24 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: AppConstNumber.kXLargePadding),
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: AppConstNumber.kButtonHeight,
               child: ElevatedButton(
-                onPressed: () {
-                  // Logout logic
-                  context.read<AuthViewModel>().logout();
-                },
+                onPressed: () => context.read<AuthViewModel>().logout(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.primaryColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppConstNumber.kDefaultRadius),
                   ),
                   elevation: 0,
                 ),
                 child: const Text(
                   "로그아웃",
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
+                    color: AppColor.white,
+                    fontSize: AppConstNumber.kTitleFontSize,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -107,21 +102,21 @@ class ProfilePage extends StatelessWidget {
     if (value == null || value.isEmpty) return const SizedBox.shrink();
 
     return Padding(
-      padding: EdgeInsets.only(bottom: isLast ? 0 : 24.0),
+      padding: EdgeInsets.only(bottom: isLast ? 0 : AppConstNumber.kDefaultPadding),
       child: Column(
         children: [
           Text(
             label,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: AppConstNumber.kBodyFontSize,
               color: AppColor.textGrey,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppConstNumber.kSmallPadding),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: AppConstNumber.kTitleFontSize,
               fontWeight: FontWeight.w500,
               color: AppColor.textBlack,
             ),

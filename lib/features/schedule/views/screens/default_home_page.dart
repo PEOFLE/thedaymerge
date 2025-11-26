@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/cores/app_const_number.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
 import 'package:thedaymerge/features/schedule/views/components/calendar_component.dart';
 import 'package:thedaymerge/features/schedule/views/components/list_item_component.dart';
@@ -18,7 +19,6 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
   @override
   void initState() {
     super.initState();
-    // Refresh schedules when the page loads (e.g. after login)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ScheduleViewModel>().fetchSchedules();
     });
@@ -26,12 +26,10 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch ViewModel
     final viewModel = context.watch<ScheduleViewModel>();
     final schedules = viewModel.selectedDaySchedules;
     final selectedDay = viewModel.selectedDay;
 
-    // Date Format for Header (e.g., 11월 26일 수요일)
     final dateHeader = DateFormat('M월 d일 EEEE', 'ko_KR').format(selectedDay);
 
     return Scaffold(
@@ -41,7 +39,7 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
         surfaceTintColor: Colors.transparent,
         title: const Text(
           "AI 일정 관리",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppConstNumber.kHeaderFontSize),
         ),
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -57,21 +55,20 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
             onPageChanged: (focused) {
               viewModel.onPageChanged(focused);
             },
-            // [추가] 이벤트 로더 함수 전달 -> 캘린더에 점(마커) 표시
             eventLoader: (day) {
               return viewModel.getEventsForDay(day);
             },
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppConstNumber.kLargeRadius),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: AppConstNumber.kLargeRadius),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   dateHeader,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: AppConstNumber.kHeaderFontSize,
                     fontWeight: FontWeight.bold,
                     color: AppColor.textBlack,
                   ),
@@ -79,14 +76,14 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
                 Text(
                   "${schedules.length}개",
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: AppConstNumber.kBodyFontSize,
                     color: AppColor.textGrey,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppConstNumber.kItemSpacing),
           Expanded(
             child: schedules.isEmpty
                 ? const Center(
@@ -106,12 +103,11 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to upload page or add schedule dialog
           debugPrint("Add schedule clicked");
         },
         backgroundColor: AppColor.primaryColor,
         shape: const CircleBorder(),
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: AppColor.white),
       ),
     );
   }

@@ -11,7 +11,7 @@ class ScheduleAiRepository {
   // [설정]
   // ==========================================
   static const String apiUrl = 'https://clovastudio.stream.ntruss.com/v3/tasks/oi5sjiig/chat-completions';
-  static const String apiKey = ''; // ★★★ 여기에 API 키 입력 ★★★
+  static const String apiKey = 'nv-d774ad029d1c47dfa4d61235b3148b0csRRX'; // ★★★ 여기에 API 키 입력 ★★★
   // ==========================================
 
   Future<ScheduleModel?> analyzeImage(String imagePath) async {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/cores/app_const_number.dart';
 import 'package:thedaymerge/features/schedule/models/schedule_model.dart';
 
 class ListItemComponent extends StatelessWidget {
@@ -12,7 +13,6 @@ class ListItemComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     String timeString;
     
-    // Check if start and end are on the same day
     bool isSameDay = schedule.startTime.year == schedule.endTime.year &&
         schedule.startTime.month == schedule.endTime.month &&
         schedule.startTime.day == schedule.endTime.day;
@@ -28,15 +28,15 @@ class ListItemComponent extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: AppConstNumber.kSmallPadding, horizontal: AppConstNumber.kLargeRadius),
+      padding: const EdgeInsets.all(AppConstNumber.kMediumPadding),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: AppColor.white,
+        borderRadius: BorderRadius.circular(AppConstNumber.kDefaultRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
+            color: AppColor.shadowColor,
+            blurRadius: AppConstNumber.kSmallRadius,
             offset: const Offset(0, 2),
           ),
         ],
@@ -44,14 +44,14 @@ class ListItemComponent extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 4,
-            height: 40,
+            width: AppConstNumber.kListItemVerticalBarWidth,
+            height: AppConstNumber.kIconSizeM,
             decoration: BoxDecoration(
               color: AppColor.primaryColor,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppConstNumber.kXSmallRadius),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppConstNumber.kDefaultRadius),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,25 +62,25 @@ class ListItemComponent extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE1BEE7), // Light purple
-                          borderRadius: BorderRadius.circular(4),
+                          color: AppColor.aiTagBackgroundColor,
+                          borderRadius: BorderRadius.circular(AppConstNumber.kSmallRadius),
                         ),
                         child: const Text(
                           "AI",
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: AppConstNumber.kXSmallFontSize,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF7B1FA2), // Deep purple
+                            color: AppColor.aiTagTextColor,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppConstNumber.kSmallPadding),
                     ],
                     Expanded(
                       child: Text(
                         schedule.scheduleName,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: AppConstNumber.kTitleFontSize,
                           fontWeight: FontWeight.bold,
                           color: AppColor.textBlack,
                         ),
@@ -89,11 +89,11 @@ class ListItemComponent extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppConstNumber.kXSmallPadding),
                 Text(
                   timeString,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: AppConstNumber.kBodyFontSize,
                     color: AppColor.textGrey,
                   ),
                 ),

@@ -3,6 +3,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/cores/app_const_number.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
 
 class UploadPage extends StatefulWidget {
@@ -20,21 +21,16 @@ class _UploadPageState extends State<UploadPage> {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         if (!mounted) return;
-        
         final viewModel = context.read<ScheduleViewModel>();
-        
-        // [수정] analyzeImage가 에러 메시지 또는 성공 메시지를 String으로 반환함
         final result = await viewModel.analyzeImage(image.path);
         
         if (!mounted) return;
-        
-        // 결과 메시지를 스낵바로 표시
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result),
             backgroundColor: result.startsWith("일정이 등록되었습니다") 
                 ? AppColor.primaryColor 
-                : Colors.redAccent, // 성공/실패에 따라 색상 구분
+                : AppColor.errorColor,
           ),
         );
       }
@@ -59,34 +55,34 @@ class _UploadPageState extends State<UploadPage> {
         surfaceTintColor: Colors.transparent,
         title: const Text(
           "AI 일정 관리",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppConstNumber.kHeaderFontSize),
         ),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: AppConstNumber.kDefaultPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: AppConstNumber.kLargeRadius),
             const Text(
               "스크린샷 업로드",
               style: TextStyle(
-                fontSize: 22,
+                fontSize: AppConstNumber.kPageTitleFontSize,
                 fontWeight: FontWeight.bold,
                 color: AppColor.textBlack,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppConstNumber.kSmallPadding),
             const Text(
               "일정이 포함된 스크린샷을 업로드하면 AI가 자동으로 일정을 생성합니다.",
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppConstNumber.kBodyFontSize,
                 color: AppColor.textGrey,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppConstNumber.kLargePadding),
             GestureDetector(
               onTap: isAnalyzing ? null : _pickImage,
               child: DottedBorder(
@@ -94,13 +90,13 @@ class _UploadPageState extends State<UploadPage> {
                 strokeWidth: 2,
                 dashPattern: const [8, 4],
                 borderType: BorderType.RRect,
-                radius: const Radius.circular(12),
+                radius: const Radius.circular(AppConstNumber.kDefaultRadius),
                 child: Container(
                   width: double.infinity,
-                  height: 200,
+                  height: AppConstNumber.kUploadBoxHeight,
                   decoration: BoxDecoration(
                     color: AppColor.primaryColor.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppConstNumber.kDefaultRadius),
                   ),
                   child: isAnalyzing 
                       ? const Center(child: CircularProgressIndicator(color: AppColor.primaryColor))
@@ -109,23 +105,23 @@ class _UploadPageState extends State<UploadPage> {
                           children: [
                             Icon(
                               Icons.upload_rounded, 
-                              size: 40, 
+                              size: AppConstNumber.kIconSizeM, 
                               color: AppColor.primaryColor.withOpacity(0.8)
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: AppConstNumber.kMediumPadding),
                             const Text(
                               "클릭하여 이미지 선택",
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: AppConstNumber.kTitleFontSize,
                                 fontWeight: FontWeight.bold,
                                 color: AppColor.textBlack,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: AppConstNumber.kSmallPadding),
                             const Text(
                               "PNG, JPG, JPEG 파일을 지원합니다",
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: AppConstNumber.kSmallFontSize,
                                 color: AppColor.textGrey,
                               ),
                             ),
@@ -134,22 +130,22 @@ class _UploadPageState extends State<UploadPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: AppConstNumber.kXLargePadding),
             Row(
               children: const [
-                Text("💡", style: TextStyle(fontSize: 18)),
-                SizedBox(width: 8),
+                Text("💡", style: TextStyle(fontSize: AppConstNumber.kHeaderFontSize)),
+                SizedBox(width: AppConstNumber.kSmallPadding),
                 Text(
                   "팁",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: AppConstNumber.kHeaderFontSize,
                     fontWeight: FontWeight.bold,
                     color: AppColor.textBlack,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppConstNumber.kMediumPadding),
             _buildTipText("이메일, 메시지, 카카오톡 등의 스크린샷을 업로드하세요."),
             _buildTipText("날짜, 시간, 장소가 명확하게 보이는 이미지가 좋습니다."),
             _buildTipText("AI가 텍스트를 인식하여 자동으로 일정을 생성합니다."),
@@ -161,7 +157,7 @@ class _UploadPageState extends State<UploadPage> {
 
   Widget _buildTipText(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: AppConstNumber.kSmallPadding),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -170,7 +166,7 @@ class _UploadPageState extends State<UploadPage> {
             child: Text(
               text,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: AppConstNumber.kBodyFontSize,
                 color: AppColor.textGrey,
                 height: 1.4,
               ),

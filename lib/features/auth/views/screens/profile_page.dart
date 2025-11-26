@@ -4,6 +4,8 @@ import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
 import 'package:thedaymerge/features/auth/viewmodels/auth_viewmodel.dart';
 import 'package:thedaymerge/features/auth/viewmodels/profile_viewmodel.dart';
+import 'package:thedaymerge/features/main_navigation/views/components/main_app_bar.dart';
+import 'package:thedaymerge/features/auth/views/components/profile_info_item.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -16,16 +18,7 @@ class ProfilePage extends StatelessWidget {
         builder: (context, viewModel, child) {
           return Scaffold(
             backgroundColor: AppColor.backgroundColor,
-            appBar: AppBar(
-              backgroundColor: AppColor.backgroundColor,
-              surfaceTintColor: Colors.transparent,
-              title: const Text(
-                "AI 일정 관리",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppConstNumber.kHeaderFontSize),
-              ),
-              centerTitle: true,
-              automaticallyImplyLeading: false,
-            ),
+            appBar: const MainAppBar(),
             body: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: AppConstNumber.kDefaultPadding),
               child: Column(
@@ -55,12 +48,15 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ],
                     ),
+                    // [수정] ProfileInfoItem 컴포넌트 사용
                     child: Column(
                       children: [
-                        _buildProfileItem("이메일", viewModel.userEmail),
-                        _buildProfileItem("이름", viewModel.userName),
-                        _buildProfileItem("가입일", viewModel.joinDateString, isLast: true),
-                      ],
+                        ProfileInfoItem(label: "이메일", value: viewModel.userEmail),
+                        const SizedBox(height: AppConstNumber.kDefaultPadding),
+                        ProfileInfoItem(label: "이름", value: viewModel.userName),
+                        const SizedBox(height: AppConstNumber.kDefaultPadding),
+                        ProfileInfoItem(label: "가입일", value: viewModel.joinDateString),
+                      ].where((widget) => widget is! SizedBox || (widget.height != AppConstNumber.kDefaultPadding && widget.height != 0)).toList(),
                     ),
                   ),
                   const SizedBox(height: AppConstNumber.kXLargePadding),
@@ -91,34 +87,6 @@ class ProfilePage extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildProfileItem(String label, String? value, {bool isLast = false}) {
-    if (value == null || value.isEmpty) return const SizedBox.shrink();
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: isLast ? 0 : AppConstNumber.kDefaultPadding),
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: AppConstNumber.kBodyFontSize,
-              color: AppColor.textGrey,
-            ),
-          ),
-          const SizedBox(height: AppConstNumber.kSmallPadding),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: AppConstNumber.kTitleFontSize,
-              fontWeight: FontWeight.w500,
-              color: AppColor.textBlack,
-            ),
-          ),
-        ],
       ),
     );
   }

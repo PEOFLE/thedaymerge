@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
+import 'package:thedaymerge/features/main_navigation/views/components/main_app_bar.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
 import 'package:thedaymerge/features/schedule/views/components/calendar_component.dart';
 import 'package:thedaymerge/features/schedule/views/components/list_item_component.dart';
@@ -34,16 +35,8 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
 
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppColor.backgroundColor,
-        surfaceTintColor: Colors.transparent,
-        title: const Text(
-          "AI 일정 관리",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppConstNumber.kHeaderFontSize),
-        ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
+      // [수정] 공통 AppBar 컴포넌트 사용
+      appBar: const MainAppBar(),
       body: Column(
         children: [
           CalendarComponent(

@@ -3,14 +3,14 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:provider/provider.dart';
 import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
+import 'package:thedaymerge/features/main_navigation/views/components/main_app_bar.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/upload_viewmodel.dart';
+import 'package:thedaymerge/features/schedule/views/components/tips_section.dart';
 
-/// 비즈니스 로직이 분리되었으므로 StatelessWidget으로 전환
 class UploadPage extends StatelessWidget {
   const UploadPage({super.key});
 
-  // 이미지 선택 및 분석 로직을 ViewModel에 위임
   Future<void> _pickImage(BuildContext context) async {
     final uploadViewModel = context.read<UploadViewModel>();
     final result = await uploadViewModel.pickAndAnalyzeImage();
@@ -29,25 +29,14 @@ class UploadPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // UploadViewModel을 이 위젯 내에서 로컬로 제공
     return ChangeNotifierProvider(
       create: (context) => UploadViewModel(context.read<ScheduleViewModel>()),
       builder: (context, child) {
-        // isAnalyzing 상태는 ScheduleViewModel에서 계속 관찰
         final isAnalyzing = context.select((ScheduleViewModel vm) => vm.isAnalyzing);
 
         return Scaffold(
           backgroundColor: AppColor.backgroundColor,
-          appBar: AppBar(
-            backgroundColor: AppColor.backgroundColor,
-            surfaceTintColor: Colors.transparent,
-            title: const Text(
-              "AI 일정 관리",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppConstNumber.kHeaderFontSize),
-            ),
-            centerTitle: true,
-            automaticallyImplyLeading: false,
-          ),
+          appBar: const MainAppBar(),
           body: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: AppConstNumber.kDefaultPadding),
             child: Column(
@@ -119,51 +108,13 @@ class UploadPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppConstNumber.kXLargePadding),
-                Row(
-                  children: const [
-                    Text("💡", style: TextStyle(fontSize: AppConstNumber.kHeaderFontSize)),
-                    SizedBox(width: AppConstNumber.kSmallPadding),
-                    Text(
-                      "팁",
-                      style: TextStyle(
-                        fontSize: AppConstNumber.kHeaderFontSize,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.textBlack,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppConstNumber.kMediumPadding),
-                _buildTipText("이메일, 메시지, 카카오톡 등의 스크린샷을 업로드하세요."),
-                _buildTipText("날짜, 시간, 장소가 명확하게 보이는 이미지가 좋습니다."),
-                _buildTipText("AI가 텍스트를 인식하여 자동으로 일정을 생성합니다."),
+                // [수정] 팁 섹션 컴포넌트 사용
+                const TipsSection(),
               ],
             ),
           ),
         );
       },
-    );
-  }
-
-  Widget _buildTipText(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppConstNumber.kSmallPadding),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("• ", style: TextStyle(color: AppColor.textGrey)),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: AppConstNumber.kBodyFontSize,
-                color: AppColor.textGrey,
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

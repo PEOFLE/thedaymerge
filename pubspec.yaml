@@ -31,6 +31,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.3
 
+  provider: ^6.1.5+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

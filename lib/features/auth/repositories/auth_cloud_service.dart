@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/user_model.dart';
+import 'package:thedaymerge/features/auth/models/user_model.dart';
 
 class AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;

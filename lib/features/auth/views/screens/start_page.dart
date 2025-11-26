@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../cores/app_color.dart';
-import '../../viewmodels/auth_viewmodel.dart';
+import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/features/auth/viewmodels/auth_viewmodel.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});

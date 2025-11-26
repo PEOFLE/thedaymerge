@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../../../cores/app_color.dart';
-import '../../viewmodels/auth_viewmodel.dart';
+import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/features/auth/viewmodels/auth_viewmodel.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

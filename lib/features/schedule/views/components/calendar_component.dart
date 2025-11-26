@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../../../../cores/app_color.dart';
-import '../../models/schedule_model.dart';
+import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/features/schedule/models/schedule_model.dart';
 
 class CalendarComponent extends StatelessWidget {
   final DateTime focusedDay;

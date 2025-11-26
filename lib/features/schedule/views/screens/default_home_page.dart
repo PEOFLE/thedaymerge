@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../../../cores/app_color.dart';
-import '../../viewmodels/schedule_viewmodel.dart';
-import '../components/calendar_component.dart';
-import '../components/list_item_component.dart';
+import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
+import 'package:thedaymerge/features/schedule/views/components/calendar_component.dart';
+import 'package:thedaymerge/features/schedule/views/components/list_item_component.dart';
 
 class DefaultHomePage extends StatefulWidget {
   const DefaultHomePage({super.key});

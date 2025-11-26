@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import '../../models/schedule_model.dart';
+import 'package:thedaymerge/features/schedule/models/schedule_model.dart';
 import 'ocr_service.dart';
 
 class ScheduleAiRepository {

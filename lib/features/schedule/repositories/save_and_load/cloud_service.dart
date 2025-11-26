@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../models/schedule_model.dart';
+import 'package:thedaymerge/features/schedule/models/schedule_model.dart';
 
 class ScheduleRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

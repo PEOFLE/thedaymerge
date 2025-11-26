@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../cores/app_color.dart';
-import '../../schedule/views/screens/default_home_page.dart';
-import '../../auth/views/screens/profile_page.dart';
-import '../../schedule/views/screens/upload_page.dart';
-import '../viewmodels/navigation_viewmodel.dart';
+import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/features/schedule/views/screens/default_home_page.dart';
+import 'package:thedaymerge/features/auth/views/screens/profile_page.dart';
+import 'package:thedaymerge/features/schedule/views/screens/upload_page.dart';
+import 'package:thedaymerge/features/main_navigation/viewmodels/navigation_viewmodel.dart';
 
 class MainNavigationScreen extends StatelessWidget {
   const MainNavigationScreen({super.key});

@@ -20,7 +20,7 @@
 - 만약 다를 시 
 - 일정 표시를 start time ~ end time으로 간주해야함.
 
-- lib/yesterday 의 파일들은 과거 자료들로. 참고 가능함.
+
 
 ## 1. 프로젝트 개요
 이 프로젝트는 **Flutter & Firebase** 기반의 **일정 관리(Schedule) 및 AI OCR 스캔 앱**입니다.
@@ -131,7 +131,7 @@ AI OCR에는 mlkit을 사용할 예정임(단 이는 백엔드 개발자가 구�
 ## 6. 코딩 컨벤션 (Coding Conventions)
 
 - **Models:** 모든 데이터 모델은 `fromJson`과 `toJson` 메서드를 포함해야 합니다.
-- **Imports:** Relative Path(`../../`) 대신 가급적 Package Path(`package:app_name/...`) 사용을 권장하지만, Feature 내부에서는 Relative Path를 허용합니다.
+- **Imports:** Relative Path(`../../`) 대신 가급적 Package Path(`package:app_name/...`) 사용을 권장
 - **Async/Await:** 비동기 작업 시 `FutureBuilder` 선호합니다.
 - **Naming:**
     - 파일명: `snake_case` (e.g., `auth_repository.dart`)

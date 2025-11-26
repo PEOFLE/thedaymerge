@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import '../models/user_model.dart';
-import '../repositories/auth_cloud_service.dart';
+import 'package:thedaymerge/features/auth/models/user_model.dart';
+import 'package:thedaymerge/features/auth/repositories/auth_cloud_service.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthRepository _repository;

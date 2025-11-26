@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../../../../cores/app_color.dart';
-import '../../viewmodels/schedule_viewmodel.dart';
+import 'package:thedaymerge/cores/app_color.dart';
+import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});

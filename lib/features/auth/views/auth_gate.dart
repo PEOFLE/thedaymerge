@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../main_navigation/views/main_navigation_screen.dart';
-import '../viewmodels/auth_viewmodel.dart';
+import 'package:thedaymerge/features/main_navigation/views/main_navigation_screen.dart';
+import 'package:thedaymerge/features/auth/viewmodels/auth_viewmodel.dart';
 import 'screens/start_page.dart';
 
 class AuthGate extends StatelessWidget {

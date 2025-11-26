@@ -4,12 +4,13 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 // 모델 & 서비스 import
-import '../../../models/schedule.dart'; // 🔥 Schedule 모델 추가
+import '../../../models/schedule.dart';
 import '../../../functions/ocr_service.dart';
 import '../../../functions/ai_service.dart';
-import '../../../functions/cloud_service.dart'; // 🔥 firebase_service 대신 cloud_service 사용
+import '../../../functions/cloud_service.dart';
 import '../../../theme/app_colors.dart';
 
 class UploadScreen extends StatefulWidget {
@@ -24,6 +25,16 @@ class _UploadScreenState extends State<UploadScreen> {
 
   // 📸 이미지 선택 및 AI 분석 프로세스 함수
   Future<void> _pickAndAnalyzeImage() async {
+    // 🔥 [1단계] 웹(Chrome)인지 먼저 확인!
+    // 웹에서는 파일 시스템(dart:io)과 OCR이 작동하지 않으므로 미리 막습니다.
+    if (kIsWeb) {
+      _showErrorDialog(
+          "현재 웹(브라우저) 환경에서는\n이미지 분석 기능을 사용할 수 없습니다.\n\n"
+              "실제 기기에서 실행해주세요! 📱"
+      );
+      return;
+    }
+
     final picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
@@ -55,7 +66,16 @@ class _UploadScreenState extends State<UploadScreen> {
       await _parseAndSaveSchedule(aiResult);
 
     } catch (e) {
-      _showErrorDialog("알 수 없는 오류가 발생했습니다: $e");
+      // 🔥 [2단계] 에러 메시지 예쁘게 다듬기
+      String errorMessage = e.toString();
+
+      // 개발자용 에러 메시지가 포함되어 있다면 친절하게 변경
+      if (errorMessage.contains("Unsupported operation") || errorMessage.contains("_Namespace")) {
+        errorMessage = "이 기기에서는 지원하지 않는 기능입니다.\n모바일 환경에서 실행해주세요.";
+      }
+
+      _showErrorDialog("오류가 발생했습니다.\n\n$errorMessage");
+      print("🔍 상세 에러 로그: $e"); // 개발자는 로그로 확인
     } finally {
       if (mounted) {
         setState(() {

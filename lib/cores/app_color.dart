@@ -9,7 +9,7 @@ class AppColor {
   static const Color white = Colors.white;
 
   // Refactoring: Added Colors
-  static final Color shadowColor = Colors.black.withOpacity(0.05);
+  static final Color shadowColor = Colors.black.withAlpha(10);
   static const Color errorColor = Colors.redAccent;
   static const Color aiTagBackgroundColor = Color(0xFFE1BEE7); // Light purple
   static const Color aiTagTextColor = Color(0xFF7B1FA2);     // Deep purple

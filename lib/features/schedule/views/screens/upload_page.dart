@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:provider/provider.dart';
+
 import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
+
+import 'package:thedaymerge/features/schedule/views/components/page_header.dart';
 import 'package:thedaymerge/features/main_navigation/views/components/main_app_bar.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
+import 'package:thedaymerge/features/schedule/views/components/image_upload_box.dart';
 import 'package:thedaymerge/features/schedule/views/components/tips_section.dart';
 
 class UploadPage extends StatelessWidget {
   const UploadPage({super.key});
 
   Future<void> _pickImage(BuildContext context) async {
-    // [수정] 전역 ScheduleViewModel의 메서드를 직접 호출
     final viewModel = context.read<ScheduleViewModel>();
     final result = await viewModel.pickAndAnalyzeImage();
 
@@ -29,7 +31,6 @@ class UploadPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // [수정] isAnalyzing 상태를 전역 ViewModel에서 가져옴
     final isAnalyzing = context.select((ScheduleViewModel vm) => vm.isAnalyzing);
 
     return Scaffold(
@@ -40,72 +41,20 @@ class UploadPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: AppConstNumber.kLargeRadius),
-            const Text(
-              "스크린샷 업로드",
-              style: TextStyle(
-                fontSize: AppConstNumber.kPageTitleFontSize,
-                fontWeight: FontWeight.bold,
-                color: AppColor.textBlack,
-              ),
-            ),
-            const SizedBox(height: AppConstNumber.kSmallPadding),
-            const Text(
-              "일정이 포함된 스크린샷을 업로드하면 AI가 자동으로 일정을 생성합니다.",
-              style: TextStyle(
-                fontSize: AppConstNumber.kBodyFontSize,
-                color: AppColor.textGrey,
-              ),
+            // [수정] PageHeader 컴포넌트 사용
+            const PageHeader(
+              title: "스크린샷 업로드",
+              subtitle: "일정이 포함된 스크린샷을 업로드하면 AI가 자동으로 일정을 생성합니다.",
             ),
             const SizedBox(height: AppConstNumber.kLargePadding),
-            GestureDetector(
-              onTap: isAnalyzing ? null : () => _pickImage(context),
-              child: DottedBorder(
-                color: AppColor.primaryColor.withOpacity(0.5),
-                strokeWidth: 2,
-                dashPattern: const [8, 4],
-                borderType: BorderType.RRect,
-                radius: const Radius.circular(AppConstNumber.kDefaultRadius),
-                child: Container(
-                  width: double.infinity,
-                  height: AppConstNumber.kUploadBoxHeight,
-                  decoration: BoxDecoration(
-                    color: AppColor.primaryColor.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(AppConstNumber.kDefaultRadius),
-                  ),
-                  child: isAnalyzing 
-                      ? const Center(child: CircularProgressIndicator(color: AppColor.primaryColor))
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.upload_rounded, 
-                              size: AppConstNumber.kIconSizeM, 
-                              color: AppColor.primaryColor.withOpacity(0.8)
-                            ),
-                            const SizedBox(height: AppConstNumber.kMediumPadding),
-                            const Text(
-                              "클릭하여 이미지 선택",
-                              style: TextStyle(
-                                fontSize: AppConstNumber.kTitleFontSize,
-                                fontWeight: FontWeight.bold,
-                                color: AppColor.textBlack,
-                              ),
-                            ),
-                            const SizedBox(height: AppConstNumber.kSmallPadding),
-                            const Text(
-                              "PNG, JPG, JPEG 파일을 지원합니다",
-                              style: TextStyle(
-                                fontSize: AppConstNumber.kSmallFontSize,
-                                color: AppColor.textGrey,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-              ),
+            
+            // [수정] ImageUploadBox 컴포넌트 사용
+            ImageUploadBox(
+              isAnalyzing: isAnalyzing,
+              onTap: () => _pickImage(context),
             ),
             const SizedBox(height: AppConstNumber.kXLargePadding),
+            
             const TipsSection(),
           ],
         ),

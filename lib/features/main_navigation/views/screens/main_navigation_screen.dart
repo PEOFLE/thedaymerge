@@ -10,6 +10,8 @@ class MainNavigationScreen extends StatelessWidget {
 
   final StatefulNavigationShell navigationShell;
 
+
+  ///router_config.dart에서 써먹음
   const MainNavigationScreen({
     super.key,
     required this.navigationShell,

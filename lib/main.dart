@@ -12,8 +12,6 @@ import 'package:thedaymerge/features/auth/viewmodels/auth_viewmodel.dart';
 import 'package:thedaymerge/features/schedule/repositories/save_and_load/cloud_service.dart';
 import 'package:thedaymerge/features/schedule/repositories/ai_and_ocr/ai_service.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
-//import 'package:thedaymerge/features/main_navigation/viewmodels/navigation_viewmodel.dart';
-
 
 /// main - app의 시작점
 /// 여기서 하는 일 : 파이어베이스 초기화 하기

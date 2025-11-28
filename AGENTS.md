@@ -13,12 +13,14 @@
 - schedule name(String)
 - start time (DateTime)
 - end time (DateTime)
+- alarm time (DateTime)
+- isAi (bool)
 
 - 2번과 관련된 주의사항 
-- start time의 yyyy mm dd와 endtime의 yyyy mm dd가 같을 시 
-- 일정 표시를 해당 날짜 당일로 표시해야함
-- 만약 다를 시 
-- 일정 표시를 start time ~ end time으로 간주해야함.
+- start time의 yyyy mm dd와 endtime의 yyyy mm dd가 같을 시,
+  일정 표시를 해당 날짜 당일로 표시해야함
+- 만약 다를 시,
+  일정 표시를 start time ~ end time으로 간주해야함.
 
 
 

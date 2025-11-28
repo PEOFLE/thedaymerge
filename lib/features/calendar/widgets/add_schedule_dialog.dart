@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../models/schedule.dart';
 import '../../../theme/app_colors.dart';
 
@@ -18,6 +17,9 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
   // 기본 시간 설정 (현재 시간 ~ 1시간 뒤)
   late TimeOfDay _startTime;
   late TimeOfDay _endTime;
+
+  // 🔥 알림 시간 선택 변수 (기본값 = 10분 전)
+  int _alarmMinutes = 10;
 
   @override
   void initState() {
@@ -83,6 +85,34 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
               _buildTimeButton('종료', _endTime, false),
             ],
           ),
+
+          const SizedBox(height: 24),
+
+          // 🔥 3. 알림 설정 드롭다운 (추가된 부분)
+          Row(
+            children: [
+              const Icon(Icons.notifications_active_outlined, size: 20, color: AppColors.textGrey),
+              const SizedBox(width: 8),
+              const Text("알림", style: TextStyle(color: AppColors.textBlack)),
+              const Spacer(),
+              DropdownButton<int>(
+                value: _alarmMinutes,
+                underline: Container(), // 밑줄 제거
+                items: const [
+                  DropdownMenuItem(value: 0, child: Text("정시")),
+                  DropdownMenuItem(value: 10, child: Text("10분 전")),
+                  DropdownMenuItem(value: 30, child: Text("30분 전")),
+                  DropdownMenuItem(value: 60, child: Text("1시간 전")),
+                  DropdownMenuItem(value: 1440, child: Text("1일 전")),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _alarmMinutes = value!;
+                  });
+                },
+              ),
+            ],
+          ),
         ],
       ),
       actions: [
@@ -114,17 +144,26 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
               _endTime.minute,
             );
 
-            // 입력된 정보로 Schedule 객체 생성해서 돌려주기
+            // 🔥 선택된 분(minute)에 따라 텍스트 생성
+            String reminderText = "알림 없음";
+            if (_alarmMinutes == 0) reminderText = "정시 알림";
+            else if (_alarmMinutes == 10) reminderText = "10분 전";
+            else if (_alarmMinutes == 30) reminderText = "30분 전";
+            else if (_alarmMinutes == 60) reminderText = "1시간 전";
+            else if (_alarmMinutes == 1440) reminderText = "1일 전";
+
+            // 일정 객체 생성
             final newSchedule = Schedule(
               title: _titleController.text,
               startTime: startDateTime,
               endTime: endDateTime,
-              reminder: '설정 안 함', // 기본값
-              isAI: false, // 직접 추가했으므로 AI 아님
-              isExample: false, // 진짜 데이터
+              reminder: reminderText, // 계산된 텍스트 저장
+              isAI: false,
+              isExample: false,
             );
 
-            Navigator.pop(context, newSchedule);
+            // 🔥 반환값 변경: Map 형태로 리턴 (일정 + 알림시간)
+            Navigator.pop(context, {'schedule': newSchedule, 'alarmMinutes': _alarmMinutes});
           },
           child: const Text('추가', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),

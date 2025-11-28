@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'functions/notification_service.dart';
 
 import 'firebase_options.dart';
 import 'theme/app_colors.dart';
@@ -18,6 +19,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // 1. 서비스 초기화
+  await NotificationService().init();
+  // 2. 권한 요청 실행! (이게 있어야 알림이 뜹니다)
+  await NotificationService().requestPermissions();
 
   // 날짜 포맷팅 초기화
   await initializeDateFormatting();

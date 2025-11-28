@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../models/schedule.dart';
 import '../../../functions/cloud_service.dart';
+import '../../../functions/notification_service.dart'; // 🔥 알림 서비스 추가
 import '../../../theme/app_colors.dart';
 import '../widgets/schedule_list.dart';
 import '../widgets/add_schedule_dialog.dart';
@@ -35,7 +36,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Future<void> _initializeData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      // 1. 예시 데이터가 필요한지 서버에 물어보기 (User 기준)
+      // 1. 튜토리얼(예시) 확인 여부 체크
       await _checkAndLoadExample(user.uid);
       // 2. 서버 데이터 가져오기
       await _syncData(user.uid);
@@ -44,12 +45,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  // 🔥 [수정된 Logic 1] 예시 일정 로직 (서버 연동)
+  // [Logic 1] 예시 일정 로직
   Future<void> _checkAndLoadExample(String userId) async {
-    // 서버에서 "이 사람 예시 봤나요?" 확인
     bool hasSeen = await checkTutorialStatus(userId);
 
-    // 안 봤다면(false) 예시 일정 추가
     if (!hasSeen) {
       if (mounted) {
         setState(() {
@@ -60,7 +59,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               endTime: DateTime.now().add(const Duration(hours: 3)),
               reminder: '30분 전',
               isAI: true,
-              isExample: true, // X 버튼 표시
+              isExample: true,
             ),
           );
           _updateVisibleSchedules();
@@ -78,7 +77,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
       if (mounted) {
         setState(() {
-          // 기존 예시 데이터(isExample)는 유지하고, 서버 데이터 병합
           final examples = _allSchedules.where((s) => s.isExample).toList();
           _allSchedules = [...examples, ...cloudSchedules];
 
@@ -92,19 +90,40 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  // [Logic 3] 일정 추가
+  // [Logic 3] 일정 추가 (알림 예약 포함 🔥)
   Future<void> _addSchedule() async {
-    final newSchedule = await showDialog<Schedule>(
+    // 1. 팝업 띄우기 (Map 형태로 반환받음)
+    final result = await showDialog(
       context: context,
       builder: (context) => AddScheduleDialog(selectedDate: _selectedDay ?? DateTime.now()),
     );
 
-    if (newSchedule != null) {
+    // 2. 결과가 있다면 처리
+    if (result != null && result is Map) {
+      final Schedule newSchedule = result['schedule'];
+      final int alarmMinutes = result['alarmMinutes'];
+
+      // A. 화면 갱신
       setState(() {
         _allSchedules.add(newSchedule);
         _updateVisibleSchedules();
       });
 
+      // B. 🔥 알림 예약
+      // 알림 시간 계산 (시작 시간 - 설정한 분)
+      DateTime alarmTime = newSchedule.startTime.subtract(Duration(minutes: alarmMinutes));
+      // 고유 ID 생성 (시간을 정수로 변환)
+      int notificationId = newSchedule.startTime.millisecondsSinceEpoch ~/ 1000;
+
+      // 서비스 호출
+      await NotificationService().scheduleNotification(
+        id: notificationId,
+        title: newSchedule.title,
+        scheduledTime: alarmTime,
+      );
+      print("⏰ 알림 예약 완료: $alarmTime (ID: $notificationId)");
+
+      // C. Firebase 서버 저장
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         try {
@@ -118,13 +137,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('새 일정이 추가되었습니다!')),
+        const SnackBar(content: Text('새 일정과 알림이 추가되었습니다!')),
       );
     }
   }
 
-  // [Logic 4] 일정 삭제 (예시 삭제 시 서버 기록!)
+  // [Logic 4] 일정 삭제 (알림 취소 포함 🔥)
   void _removeSchedule(Schedule schedule) async {
+    // 1. 화면 삭제
     setState(() {
       _allSchedules.remove(schedule);
       _updateVisibleSchedules();
@@ -134,11 +154,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
       Navigator.of(context).pop();
     }
 
-    final user = FirebaseAuth.instance.currentUser;
+    // 2. 🔥 예약된 알림 취소
+    int notificationId = schedule.startTime.millisecondsSinceEpoch ~/ 1000;
+    await NotificationService().cancelNotification(notificationId);
+    print("🗑️ 알림 취소 완료 (ID: $notificationId)");
 
-    // 🔥 [핵심 추가] 예시 일정을 삭제했다면 -> 서버에 "나 이제 예시 봤음!" 기록 남기기
-    if (schedule.isExample && user != null) {
-      await markTutorialAsSeen(user.uid);
+    // 3. 서버 삭제 처리
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      if (schedule.isExample) {
+        await markTutorialAsSeen(user.uid);
+      } else {
+        try {
+          await deleteCalendarEventFromCloud(userId: user.uid, schedule: schedule);
+        } catch (e) {
+          print("서버 삭제 실패: $e");
+        }
+      }
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -160,7 +192,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return _allSchedules.where((schedule) => isSameDay(schedule.startTime, day)).toList();
   }
 
-  // UI 구성 (기존과 동일)
+  // ===========================================================================
+  // [UI] 화면 구성
+  // ===========================================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

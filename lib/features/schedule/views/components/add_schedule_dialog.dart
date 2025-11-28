@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
@@ -144,7 +143,7 @@ class _AddScheduleDialogState extends State<AddScheduleDialog> {
                 ),
                 Switch(
                   value: _hasAlarm,
-                  activeColor: AppColor.primaryColor,
+                  activeThumbColor: AppColor.primaryColor,
                   onChanged: (bool value) {
                     setState(() {
                       _hasAlarm = value;

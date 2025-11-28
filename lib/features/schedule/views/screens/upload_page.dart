@@ -35,7 +35,7 @@ class UploadPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
-      appBar: const MainAppBar(),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: AppConstNumber.kDefaultPadding),
         child: Column(

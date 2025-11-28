@@ -54,7 +54,7 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
       // [수정] 공통 AppBar 컴포넌트 사용
-      appBar: const MainAppBar(),
+
       body: Column(
         children: [
           CalendarComponent(

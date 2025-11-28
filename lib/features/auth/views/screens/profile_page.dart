@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
@@ -20,7 +21,7 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
-      appBar: const MainAppBar(),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: AppConstNumber.kDefaultPadding),
         child: Column(
@@ -53,14 +54,20 @@ class ProfilePage extends StatelessWidget {
               child: Column(
                 children: [
                   ProfileInfoItem(label: "이메일", value: viewModel.user?.email),
+
                   const SizedBox(height: AppConstNumber.kDefaultPadding),
+
                   ProfileInfoItem(label: "UID", value: viewModel.user?.uid),
+
                   const SizedBox(height: AppConstNumber.kDefaultPadding),
-                  ProfileInfoItem(label: "가입일", value: viewModel.user?.joinDate.toString()),
+
+                  ProfileInfoItem(label: "가입일", value: viewModel.user?.formattedJoinDate),
                 ].where((widget) => widget is! SizedBox || (widget.height != AppConstNumber.kDefaultPadding && widget.height != 0)).toList(),
               ),
             ),
+
             const SizedBox(height: AppConstNumber.kXLargePadding),
+
             SizedBox(
               width: double.infinity,
               height: AppConstNumber.kButtonHeight,
@@ -90,6 +97,7 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ),
+
           ],
         ),
       ),

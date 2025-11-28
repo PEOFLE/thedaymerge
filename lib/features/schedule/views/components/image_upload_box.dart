@@ -19,7 +19,7 @@ class ImageUploadBox extends StatelessWidget {
     return GestureDetector(
       onTap: isAnalyzing ? null : onTap,
       child: DottedBorder(
-        color: AppColor.primaryColor.withOpacity(0.5),
+        color: AppColor.primaryColor.withAlpha(80),
         strokeWidth: 2,
         dashPattern: const [8, 4],
         borderType: BorderType.RRect,
@@ -28,7 +28,7 @@ class ImageUploadBox extends StatelessWidget {
           width: double.infinity,
           height: AppConstNumber.kUploadBoxHeight,
           decoration: BoxDecoration(
-            color: AppColor.primaryColor.withOpacity(0.05),
+            color: AppColor.primaryColor.withAlpha(20),
             borderRadius: BorderRadius.circular(AppConstNumber.kDefaultRadius),
           ),
           child: isAnalyzing
@@ -47,7 +47,7 @@ class ImageUploadBox extends StatelessWidget {
         Icon(
           Icons.upload_rounded,
           size: AppConstNumber.kIconSizeM,
-          color: AppColor.primaryColor.withOpacity(0.8),
+          color: AppColor.primaryColor.withAlpha(80),
         ),
         const SizedBox(height: AppConstNumber.kMediumPadding),
         const Text(

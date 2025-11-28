@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class UserModel {
   final String uid;
   final String email;
@@ -28,4 +30,11 @@ class UserModel {
       'joinDate': joinDate.toIso8601String(),
     };
   }
+
+  // ★ [추가] 화면에서 갖다 쓰기 편하게 만든 getter
+  // 호출할 때는 user.formattedJoinDate 라고만 쓰면 됨
+  String get formattedJoinDate {
+    return DateFormat('yyyy년 MM월 dd일').format(joinDate);
+  }
+
 }

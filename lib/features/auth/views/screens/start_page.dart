@@ -1,21 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
-import 'package:thedaymerge/features/auth/viewmodels/auth_viewmodel.dart';
 import 'package:thedaymerge/features/auth/views/components/auth_form.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});
 
-  void _showErrorSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColor.errorColor,
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

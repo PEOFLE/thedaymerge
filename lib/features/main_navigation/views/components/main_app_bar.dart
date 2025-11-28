@@ -23,7 +23,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontSize: AppConstNumber.kHeaderFontSize,
         ),
       ),
-      centerTitle: true,
+      centerTitle: false,
       automaticallyImplyLeading: false,
     );
   }

@@ -12,7 +12,7 @@ class ScheduleAiRepository {
   // [설정]
   // ==========================================
   static const String apiUrl = 'https://clovastudio.stream.ntruss.com/v3/tasks/oi5sjiig/chat-completions';
-  String apiKey = dotenv.get("CLOVA_API_KEY") ?? "";// ★★★ 여기에 API 키 입력 ★★★
+  String apiKey = dotenv.get("CLOVA_API_KEY"); // ★★★ 여기에 API 키 입력 ★★★
   // ==========================================
 
   Future<ScheduleModel?> analyzeImage(String imagePath) async {

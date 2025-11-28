@@ -20,7 +20,7 @@ class StartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // [수정] 전역 AuthViewModel을 직접 사용
-    final viewModel = context.watch<AuthViewModel>();
+
 
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
@@ -45,24 +45,12 @@ class StartPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppConstNumber.kLargePadding),
-              
-              AuthForm(
-                emailController: viewModel.emailController,
-                passwordController: viewModel.passwordController,
-                isLoading: viewModel.isLoading,
-                onLogin: () async {
-                  final error = await viewModel.login();
-                  if (error != null && context.mounted) {
-                    _showErrorSnackBar(context, error);
-                  }
-                },
-                onSignUp: () async {
-                  final error = await viewModel.signUp();
-                  if (error != null && context.mounted) {
-                    _showErrorSnackBar(context, error);
-                  }
-                },
-              ),
+
+
+              ///auth_form.dart의 AuthForm 위젯.
+              ///위 파일을 보셈!!!
+              AuthForm(),
+
             ],
           ),
         ),

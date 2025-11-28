@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:thedaymerge/features/schedule/models/schedule_model.dart';
 import 'ocr_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ScheduleAiRepository {
   final OcrService _ocrService = OcrService();
@@ -11,7 +12,7 @@ class ScheduleAiRepository {
   // [설정]
   // ==========================================
   static const String apiUrl = 'https://clovastudio.stream.ntruss.com/v3/tasks/oi5sjiig/chat-completions';
-  static const String apiKey = 'nv-d774ad029d1c47dfa4d61235b3148b0csRRX'; // ★★★ 여기에 API 키 입력 ★★★
+  String apiKey = dotenv.get("CLOVA_API_KEY") ?? "";// ★★★ 여기에 API 키 입력 ★★★
   // ==========================================
 
   Future<ScheduleModel?> analyzeImage(String imagePath) async {

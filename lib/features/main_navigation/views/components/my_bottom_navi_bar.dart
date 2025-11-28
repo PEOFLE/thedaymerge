@@ -14,12 +14,16 @@ class MyBottomNaviBar extends StatelessWidget {
     final viewModel = context.watch<MainNavViewModel>();
 
     return BottomNavigationBar(
+
       currentIndex: viewModel.selectedIndex,
+
       onTap: viewModel.setIndex,
+
       selectedItemColor: AppColor.primaryColor,
       unselectedItemColor: AppColor.textGrey,
       backgroundColor: AppColor.white,
       type: BottomNavigationBarType.fixed,
+
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_today),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -15,12 +16,17 @@ import 'package:thedaymerge/features/main_navigation/viewmodels/navigation_viewm
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await initializeDateFormatting('ko_KR', null);
 
+  await dotenv.load(fileName: ".env");
+
   runApp(
+    ///Provider : 변하지 않는 도구나 서비스 클래스(값만 바뀌는 느낌)
+    ///ChangeNotirfierProvider : 값이 바뀌면 다시 그리라고 알림(notiryListener()호출 시)
     MultiProvider(
       providers: [
         // Auth

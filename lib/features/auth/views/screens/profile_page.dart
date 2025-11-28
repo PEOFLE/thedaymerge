@@ -8,6 +8,8 @@ import 'package:thedaymerge/features/auth/viewmodels/auth_viewmodel.dart';
 import 'package:thedaymerge/features/main_navigation/views/components/main_app_bar.dart';
 import 'package:thedaymerge/features/auth/views/components/profile_info_item.dart';
 
+import 'package:thedaymerge/features/main_navigation/viewmodels/navigation_viewmodel.dart';
+
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -50,11 +52,11 @@ class ProfilePage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  ProfileInfoItem(label: "이메일", value: viewModel.userEmail),
+                  ProfileInfoItem(label: "이메일", value: viewModel.user?.email),
                   const SizedBox(height: AppConstNumber.kDefaultPadding),
-                  ProfileInfoItem(label: "이름", value: viewModel.userName),
+                  ProfileInfoItem(label: "UID", value: viewModel.user?.uid),
                   const SizedBox(height: AppConstNumber.kDefaultPadding),
-                  ProfileInfoItem(label: "가입일", value: viewModel.joinDateString),
+                  ProfileInfoItem(label: "가입일", value: viewModel.user?.joinDate.toString()),
                 ].where((widget) => widget is! SizedBox || (widget.height != AppConstNumber.kDefaultPadding && widget.height != 0)).toList(),
               ),
             ),
@@ -63,7 +65,14 @@ class ProfilePage extends StatelessWidget {
               width: double.infinity,
               height: AppConstNumber.kButtonHeight,
               child: ElevatedButton(
-                onPressed: viewModel.logout,
+                onPressed: () async{
+                  // 1. 로그아웃 할 때까지 기다려라 !
+                  await viewModel.singOut();
+                  // 2. 로그아웃이 끝난 후, 아직 이 화면(Context)이 살아있다면 인덱스 초기화
+                  if (context.mounted) {
+                    context.read<MainNavViewModel>().setIndex(0);
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.primaryColor,
                   shape: RoundedRectangleBorder(

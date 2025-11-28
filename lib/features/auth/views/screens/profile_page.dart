@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
 
 import 'package:thedaymerge/features/auth/viewmodels/auth_viewmodel.dart';
-import 'package:thedaymerge/features/main_navigation/views/components/main_app_bar.dart';
 import 'package:thedaymerge/features/auth/views/components/profile_info_item.dart';
-
-import 'package:thedaymerge/features/main_navigation/viewmodels/navigation_viewmodel.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -75,10 +71,7 @@ class ProfilePage extends StatelessWidget {
                 onPressed: () async{
                   // 1. 로그아웃 할 때까지 기다려라 !
                   await viewModel.singOut();
-                  // 2. 로그아웃이 끝난 후, 아직 이 화면(Context)이 살아있다면 인덱스 초기화
-                  if (context.mounted) {
-                    context.read<MainNavViewModel>().setIndex(0);
-                  }
+                  // 로그아웃 시 AuthViewModel의 변경으로 인해 router가 자동으로 리다이렉트 처리함
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.primaryColor,

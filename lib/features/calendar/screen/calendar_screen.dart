@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../models/schedule.dart';
 import '../../../functions/cloud_service.dart';
+import '../../../functions/notification_service.dart';
 import '../../../theme/app_colors.dart';
 import '../widgets/schedule_list.dart';
 import '../widgets/add_schedule_dialog.dart';
@@ -17,7 +18,6 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  // --- 상태 변수 ---
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
@@ -35,21 +35,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Future<void> _initializeData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      // 1. 예시 데이터가 필요한지 서버에 물어보기 (User 기준)
       await _checkAndLoadExample(user.uid);
-      // 2. 서버 데이터 가져오기
       await _syncData(user.uid);
     } else {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  // 🔥 [수정된 Logic 1] 예시 일정 로직 (서버 연동)
   Future<void> _checkAndLoadExample(String userId) async {
-    // 서버에서 "이 사람 예시 봤나요?" 확인
     bool hasSeen = await checkTutorialStatus(userId);
-
-    // 안 봤다면(false) 예시 일정 추가
     if (!hasSeen) {
       if (mounted) {
         setState(() {
@@ -60,7 +54,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               endTime: DateTime.now().add(const Duration(hours: 3)),
               reminder: '30분 전',
               isAI: true,
-              isExample: true, // X 버튼 표시
+              isExample: true,
             ),
           );
           _updateVisibleSchedules();
@@ -69,19 +63,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  // [Logic 2] 데이터 동기화
   Future<void> _syncData(String userId) async {
     if (!mounted) return;
-
     try {
       final List<Schedule> cloudSchedules = await loadCalendarEventsFromCloud(userId: userId);
-
       if (mounted) {
         setState(() {
-          // 기존 예시 데이터(isExample)는 유지하고, 서버 데이터 병합
           final examples = _allSchedules.where((s) => s.isExample).toList();
           _allSchedules = [...examples, ...cloudSchedules];
-
           _updateVisibleSchedules();
           _isLoading = false;
         });
@@ -94,37 +83,77 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   // [Logic 3] 일정 추가
   Future<void> _addSchedule() async {
-    final newSchedule = await showDialog<Schedule>(
+    final result = await showDialog(
       context: context,
       builder: (context) => AddScheduleDialog(selectedDate: _selectedDay ?? DateTime.now()),
     );
 
-    if (newSchedule != null) {
-      setState(() {
-        _allSchedules.add(newSchedule);
-        _updateVisibleSchedules();
-      });
+    if (result != null && result is Map) {
+      _processNewSchedule(result['schedule'], result['alarmMinutes']);
+    }
+  }
 
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        try {
-          await saveCalendarEventsToCloud(
-            userId: user.uid,
-            eventList: [newSchedule],
-          );
-        } catch (e) {
-          print("서버 저장 실패: $e");
-        }
-      }
+  // [Logic 4] 일정 수정 🔥 [추가된 부분]
+  Future<void> _editSchedule(Schedule oldSchedule) async {
+    // 수정 팝업 띄우기 (기존 정보 전달)
+    final result = await showDialog(
+      context: context,
+      builder: (context) => AddScheduleDialog(
+        selectedDate: oldSchedule.startTime,
+        initialSchedule: oldSchedule,
+      ),
+    );
+
+    if (result != null && result is Map) {
+      final Schedule newSchedule = result['schedule'];
+      final int alarmMinutes = result['alarmMinutes'];
+
+      // 1. 기존 일정 삭제 (서버, 알림, 로컬)
+      await _removeSchedule(oldSchedule, skipSnackBar: true); // 스낵바 없이 조용히 삭제
+
+      // 2. 새 일정 추가 (서버, 알림, 로컬)
+      await _processNewSchedule(newSchedule, alarmMinutes);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('새 일정이 추가되었습니다!')),
+        const SnackBar(content: Text('일정이 수정되었습니다!')),
       );
     }
   }
 
-  // [Logic 4] 일정 삭제 (예시 삭제 시 서버 기록!)
-  void _removeSchedule(Schedule schedule) async {
+  // 일정 추가/수정 공통 처리 함수
+  Future<void> _processNewSchedule(Schedule newSchedule, int alarmMinutes) async {
+    // 화면 갱신
+    setState(() {
+      _allSchedules.add(newSchedule);
+      _updateVisibleSchedules();
+    });
+
+    // 알림 예약
+    DateTime alarmTime = newSchedule.startTime.subtract(Duration(minutes: alarmMinutes));
+    int notificationId = newSchedule.startTime.millisecondsSinceEpoch ~/ 1000;
+    await NotificationService().scheduleNotification(
+      id: notificationId,
+      title: newSchedule.title,
+      scheduledTime: alarmTime,
+    );
+
+    // 서버 저장
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await saveCalendarEventsToCloud(
+          userId: user.uid,
+          eventList: [newSchedule],
+        );
+      } catch (e) {
+        print("서버 저장 실패: $e");
+      }
+    }
+  }
+
+  // [Logic 5] 일정 삭제 (수정 시에도 사용됨)
+  Future<void> _removeSchedule(Schedule schedule, {bool skipSnackBar = false}) async {
+    // 화면 삭제
     setState(() {
       _allSchedules.remove(schedule);
       _updateVisibleSchedules();
@@ -134,16 +163,29 @@ class _CalendarScreenState extends State<CalendarScreen> {
       Navigator.of(context).pop();
     }
 
-    final user = FirebaseAuth.instance.currentUser;
+    // 알림 취소
+    int notificationId = schedule.startTime.millisecondsSinceEpoch ~/ 1000;
+    await NotificationService().cancelNotification(notificationId);
 
-    // 🔥 [핵심 추가] 예시 일정을 삭제했다면 -> 서버에 "나 이제 예시 봤음!" 기록 남기기
-    if (schedule.isExample && user != null) {
-      await markTutorialAsSeen(user.uid);
+    // 서버 삭제
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      if (schedule.isExample) {
+        await markTutorialAsSeen(user.uid);
+      } else {
+        try {
+          await deleteCalendarEventFromCloud(userId: user.uid, schedule: schedule);
+        } catch (e) {
+          print("서버 삭제 실패: $e");
+        }
+      }
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('일정이 삭제되었습니다.'), duration: Duration(milliseconds: 1500)),
-    );
+    if (!skipSnackBar) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('일정이 삭제되었습니다.'), duration: Duration(milliseconds: 1500)),
+      );
+    }
   }
 
   void _updateVisibleSchedules() {
@@ -160,15 +202,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return _allSchedules.where((schedule) => isSameDay(schedule.startTime, day)).toList();
   }
 
-  // UI 구성 (기존과 동일)
+  // ===========================================================================
+  // [UI] 화면 구성
+  // ===========================================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '그날머지?',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const Text('그날머지?', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.background,
         elevation: 0,
         centerTitle: false,
@@ -262,6 +304,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
+  // 🔥 [수정] 상세 팝업에 '수정' 버튼 추가
   void _showScheduleDetail(Schedule schedule) {
     showDialog(
       context: context,
@@ -291,6 +334,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ],
           ),
           actions: [
+            // 🔥 예시가 아닐 때만 수정 버튼 표시
+            if (!schedule.isExample)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // 팝업 닫고
+                  _editSchedule(schedule);     // 수정 화면 열기
+                },
+                child: const Text('수정', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+              ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('닫기', style: TextStyle(color: AppColors.textGrey)),

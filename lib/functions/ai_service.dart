@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // ==========================================
 // [설정]
 // ==========================================
 const String apiUrl = 'https://clovastudio.stream.ntruss.com/v3/tasks/oi5sjiig/chat-completions';
-const String apiKey = 'api'; // ★★★ 여기에 API 키 입력 ★★★,
+String get apiKey => dotenv.env['CLOVA_API_KEY'] ?? '';
 // ==========================================
 
 

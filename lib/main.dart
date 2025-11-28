@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'functions/notification_service.dart';
 
 import 'firebase_options.dart';
 import 'theme/app_colors.dart';
-import 'package:intl/date_symbol_data_local.dart';
-
 import 'features/main_navigation/screen/main_navigation_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // .env 파일 로드
+  await dotenv.load(fileName: ".env");
 
   // Firebase 초기화
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // 1. 서비스 초기화
+  await NotificationService().init();
+  // 2. 권한 요청 실행! (이게 있어야 알림이 뜹니다)
+  await NotificationService().requestPermissions();
+
+  // 날짜 포맷팅 초기화
   await initializeDateFormatting();
 
   runApp(const MyApp());
@@ -28,8 +38,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '그날머지?',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // AppColors를 사용하여 전체 테마 적용
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,
@@ -49,12 +59,12 @@ class MyApp extends StatelessWidget {
           iconTheme: IconThemeData(color: AppColors.textBlack),
         ),
       ),
-      // 앱이 시작되면 AuthGate가 로그인 여부를 판단합니다.
       home: const AuthGate(),
     );
   }
 }
 
+// 🔥 [핵심 수정] 로그인 상태를 더 똑똑하게 감지하는 AuthGate
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
@@ -63,7 +73,14 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        // 1. 로딩 중일 때
+
+        // 1. [치트키] 스트림을 기다리기 전에, 폰에 저장된 유저 정보가 있는지 먼저 확인!
+        // (이게 있으면 로딩 없이 바로 메인 화면으로 넘어갑니다)
+        if (FirebaseAuth.instance.currentUser != null) {
+          return const MainNavigationScreen();
+        }
+
+        // 2. 연결 상태가 기다리는 중이라면 로딩 화면
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
@@ -72,12 +89,12 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        // 2. 로그인이 되어 있다면? -> 메인 화면(캘린더)으로 이동!
+        // 3. 스트림을 통해 로그인이 확인된 경우
         if (snapshot.hasData) {
           return const MainNavigationScreen();
         }
 
-        // 3. 로그인이 안 되어 있다면? -> 로그인 페이지 보여줌
+        // 4. 아무것도 없다면 로그인 화면
         return const LoginPage();
       },
     );
@@ -124,8 +141,6 @@ class _LoginPageState extends State<LoginPage> {
       final pw = _passwordController.text.trim();
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: pw);
-
-      // 로그인 성공 시 AuthGate가 감지하여 자동으로 화면을 전환합니다.
     } on FirebaseAuthException catch (e) {
       _showError('로그인 실패: 아이디나 비밀번호를 확인해주세요.');
     } catch (e) {
@@ -148,7 +163,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 상단 AppBar 제거 및 SafeArea 적용
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -159,6 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                 const Icon(Icons.calendar_today_rounded,
                     size: 64, color: AppColors.primary),
                 const SizedBox(height: 24),
+
                 const Text(
                   '환영합니다!',
                   style: TextStyle(

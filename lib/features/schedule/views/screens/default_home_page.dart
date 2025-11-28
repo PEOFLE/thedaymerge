@@ -25,6 +25,24 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
     });
   }
 
+  Widget _buildScheduleList(var schedules) {
+    if (schedules.isEmpty) {
+      return const Center(
+        child: Text(
+          "등록된 일정이 없습니다.",
+          style: TextStyle(color: AppColor.textGrey),
+        ),
+      );
+    } else {
+      return ListView.builder(
+        itemCount: schedules.length,
+        itemBuilder: (context, index) {
+          return ListItemComponent(schedule: schedules[index]);
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ScheduleViewModel>();
@@ -78,19 +96,7 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
           ),
           const SizedBox(height: AppConstNumber.kItemSpacing),
           Expanded(
-            child: schedules.isEmpty
-                ? const Center(
-                    child: Text(
-                      "등록된 일정이 없습니다.",
-                      style: TextStyle(color: AppColor.textGrey),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: schedules.length,
-                    itemBuilder: (context, index) {
-                      return ListItemComponent(schedule: schedules[index]);
-                    },
-                  ),
+            child: _buildScheduleList(schedules),
           ),
         ],
       ),

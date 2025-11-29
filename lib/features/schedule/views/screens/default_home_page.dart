@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
-import 'package:thedaymerge/features/main_navigation/views/components/main_app_bar.dart';
+import 'package:thedaymerge/features/schedule/models/schedule_model.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
 import 'package:thedaymerge/features/schedule/views/components/calendar_component.dart';
 import 'package:thedaymerge/features/schedule/views/components/list_item_component.dart';
@@ -25,7 +25,7 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
     });
   }
 
-  Widget _buildScheduleList(var schedules) {
+  Widget _buildScheduleList(List<ScheduleModel> schedules) {
     if (schedules.isEmpty) {
       return const Center(
         child: Text(
@@ -37,7 +37,33 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
       return ListView.builder(
         itemCount: schedules.length,
         itemBuilder: (context, index) {
-          return ListItemComponent(schedule: schedules[index]);
+          final schedule = schedules[index];
+          return Dismissible(
+            key: Key(schedule.id),
+            direction: DismissDirection.endToStart,
+            background: Container(color: Colors.transparent),
+            secondaryBackground: Container(
+              margin: const EdgeInsets.symmetric(
+                vertical: AppConstNumber.kSmallPadding, 
+                horizontal: AppConstNumber.kLargeRadius
+              ),
+              decoration: BoxDecoration(
+                color: AppColor.errorColor,
+                borderRadius: BorderRadius.circular(AppConstNumber.kDefaultRadius),
+              ),
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20.0),
+              child: const Icon(Icons.delete, color: AppColor.white),
+            ),
+            onDismissed: (direction) {
+              context.read<ScheduleViewModel>().deleteSchedule(schedule.id);
+              
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${schedule.scheduleName} 삭제됨')),
+              );
+            },
+            child: ListItemComponent(schedule: schedule),
+          );
         },
       );
     }
@@ -53,7 +79,7 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
 
     return Scaffold(
       backgroundColor: AppColor.backgroundColor,
-      // [수정] 공통 AppBar 컴포넌트 사용
+
 
       body: Column(
         children: [

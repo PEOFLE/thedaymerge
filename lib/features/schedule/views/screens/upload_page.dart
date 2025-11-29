@@ -5,7 +5,7 @@ import 'package:thedaymerge/cores/app_color.dart';
 import 'package:thedaymerge/cores/app_const_number.dart';
 
 import 'package:thedaymerge/features/schedule/views/components/page_header.dart';
-import 'package:thedaymerge/features/main_navigation/views/components/main_app_bar.dart';
+//import 'package:thedaymerge/features/main_navigation/views/components/main_app_bar.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
 import 'package:thedaymerge/features/schedule/views/components/image_upload_box.dart';
 import 'package:thedaymerge/features/schedule/views/components/tips_section.dart';

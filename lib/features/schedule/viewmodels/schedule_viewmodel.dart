@@ -85,6 +85,10 @@ class ScheduleViewModel extends ChangeNotifier {
       isAI: schedule.isAI,
     );
   }
+
+  Future<void> deleteSchedule(String scheduleId) async {
+    await _repository.deleteSchedule(scheduleId);
+  }
   
   // For UploadPage
   Future<String> pickAndAnalyzeImage() async {

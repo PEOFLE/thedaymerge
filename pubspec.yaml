@@ -24,7 +24,7 @@ dependencies:
   # 캘린더/날짜 관련
   table_calendar: ^3.0.0
   dotted_border: ^2.0.0
-  intl: ^0.18.0
+  intl: ^0.20.2
 
   # 이미지 & OCR & 통신
   image_picker: ^1.0.4

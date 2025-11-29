@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'functions/notification_service.dart';
 
 import 'firebase_options.dart';
 import 'theme/app_colors.dart';
-import 'package:intl/date_symbol_data_local.dart';
-
 import 'features/main_navigation/screen/main_navigation_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // .env 파일 로드
+  await dotenv.load(fileName: ".env");
 
   // Firebase 초기화
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // 서비스 초기화
+  await NotificationService().init();
+  await NotificationService().requestPermissions();
+
+  // 날짜 포맷팅 초기화
   await initializeDateFormatting();
 
   runApp(const MyApp());
@@ -27,9 +36,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AI 일정 관리',
+      title: '그날머지?',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // AppColors를 사용하여 전체 테마 적용
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,
@@ -49,7 +58,6 @@ class MyApp extends StatelessWidget {
           iconTheme: IconThemeData(color: AppColors.textBlack),
         ),
       ),
-      // 앱이 시작되면 AuthGate가 로그인 여부를 판단합니다.
       home: const AuthGate(),
     );
   }
@@ -63,7 +71,9 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        // 1. 로딩 중일 때
+        if (FirebaseAuth.instance.currentUser != null) {
+          return const MainNavigationScreen();
+        }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
@@ -71,13 +81,9 @@ class AuthGate extends StatelessWidget {
             ),
           );
         }
-
-        // 2. 로그인이 되어 있다면? -> 메인 화면(캘린더)으로 이동!
         if (snapshot.hasData) {
           return const MainNavigationScreen();
         }
-
-        // 3. 로그인이 안 되어 있다면? -> 로그인 페이지 보여줌
         return const LoginPage();
       },
     );
@@ -94,9 +100,56 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
   bool _isLoading = false;
+  String? _passwordErrorText; // 🔥 비밀번호 빨간 에러 메시지용 변수
+
+  // 🔥 [핵심 1] 비밀번호 유효성 검사 함수
+  bool _validatePassword() {
+    final pw = _passwordController.text.trim();
+    String? errorMsg;
+
+    if (pw.isEmpty) {
+      errorMsg = '비밀번호를 입력해주세요.';
+    } else if (pw.length < 6) {
+      errorMsg = '6자리 이상 입력해주세요.';
+    } else if (!RegExp(r'[0-9]').hasMatch(pw)) {
+      errorMsg = '숫자를 포함해야 합니다.'; // 숫자 체크
+    } else if (!RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(pw)) {
+      errorMsg = '특수문자(기호)를 포함해야 합니다.'; // 특수문자 체크
+    }
+
+    setState(() {
+      _passwordErrorText = errorMsg;
+    });
+
+    return errorMsg == null; // 에러가 없으면 true 반환 (통과)
+  }
+
+  // 🔥 [핵심 2] Firebase 에러를 한국어로 변환하는 함수
+  String _getFriendlyError(dynamic e) {
+    if (e is FirebaseAuthException) {
+      switch (e.code) {
+        case 'invalid-email': return '이메일 형식이 올바르지 않습니다.';
+        case 'user-not-found': return '가입되지 않은 이메일입니다.';
+        case 'wrong-password': return '비밀번호가 틀렸습니다.';
+        case 'email-already-in-use': return '이미 가입된 이메일입니다.';
+        case 'weak-password': return '비밀번호 보안이 취약합니다.';
+        case 'operation-not-allowed': return '로그인 방식이 비활성화되었습니다.';
+        case 'user-disabled': return '정지된 계정입니다.';
+        case 'too-many-requests': return '잠시 후 다시 시도해주세요.';
+        case 'network-request-failed': return '네트워크 연결을 확인해주세요.';
+        case 'invalid-credential': return '인증 정보가 틀렸습니다.';
+        default: return '오류가 발생했습니다. (${e.code})';
+      }
+    }
+    return '알 수 없는 오류가 발생했습니다.';
+  }
 
   Future<void> _signUp() async {
+    // 1. 회원가입 시에는 비밀번호 규칙을 엄격하게 검사
+    if (!_validatePassword()) return;
+
     setState(() => _isLoading = true);
     try {
       final email = _emailController.text.trim();
@@ -108,28 +161,30 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('회원가입 성공! 환영합니다.')));
 
-    } on FirebaseAuthException catch (e) {
-      _showError('회원가입 실패: ${e.message}');
     } catch (e) {
-      _showError('오류가 발생했습니다.');
+      // 2. 에러 발생 시 한국어 메시지 출력
+      _showError(_getFriendlyError(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _signIn() async {
+    // 로그인 시에는 굳이 복잡한 규칙 검사보다 입력 여부만 확인하거나 바로 시도
+    if (_passwordController.text.trim().isEmpty) {
+      _showError("비밀번호를 입력해주세요.");
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       final email = _emailController.text.trim();
       final pw = _passwordController.text.trim();
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: pw);
-
-      // 로그인 성공 시 AuthGate가 감지하여 자동으로 화면을 전환합니다.
-    } on FirebaseAuthException catch (e) {
-      _showError('로그인 실패: 아이디나 비밀번호를 확인해주세요.');
     } catch (e) {
-      _showError('오류가 발생했습니다.');
+      // 3. 로그인 실패 시에도 한국어 메시지
+      _showError(_getFriendlyError(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -140,7 +195,8 @@ class _LoginPageState extends State<LoginPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: AppColors.textBlack,
+        backgroundColor: Colors.redAccent, // 에러 느낌 나게 색상 변경
+        behavior: SnackBarBehavior.floating, // 좀 더 예쁘게 띄우기
       ),
     );
   }
@@ -148,7 +204,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 상단 AppBar 제거 및 SafeArea 적용
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -159,8 +214,9 @@ class _LoginPageState extends State<LoginPage> {
                 const Icon(Icons.calendar_today_rounded,
                     size: 64, color: AppColors.primary),
                 const SizedBox(height: 24),
+
                 const Text(
-                  '다시 오신 것을 환영합니다!',
+                  '환영합니다!',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -190,10 +246,23 @@ class _LoginPageState extends State<LoginPage> {
                         keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 16),
+
+                      // 🔥 [핵심 3] 비밀번호 필드에 errorText 연결
                       TextField(
                         controller: _passwordController,
-                        decoration: _inputDecoration('비밀번호', Icons.lock_outline),
+                        decoration: _inputDecoration('비밀번호', Icons.lock_outline).copyWith(
+                          errorText: _passwordErrorText, // 여기에 에러 메시지가 들어감
+                          errorStyle: const TextStyle(color: Colors.redAccent), // 빨간 글씨
+                        ),
                         obscureText: true,
+                        onChanged: (value) {
+                          // 사용자가 다시 타이핑을 시작하면 빨간 에러를 지워줌 (UX 향상)
+                          if (_passwordErrorText != null) {
+                            setState(() {
+                              _passwordErrorText = null;
+                            });
+                          }
+                        },
                       ),
                       const SizedBox(height: 32),
 
@@ -266,6 +335,15 @@ class _LoginPageState extends State<LoginPage> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+      ),
+      // errorBorder: 에러 상태일 때 테두리 색상 (빨강)
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.redAccent, width: 2.0),
       ),
       floatingLabelStyle: const TextStyle(color: AppColors.primary),
     );

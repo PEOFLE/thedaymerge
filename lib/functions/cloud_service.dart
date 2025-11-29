@@ -107,3 +107,62 @@ Future<List<Schedule>> loadCalendarEventsFromCloud({
     return []; // 에러 나면 빈 리스트 반환
   }
 }
+
+// ... (기존 save, load 함수들 아래에 추가) ...
+
+// -----------------------------------------------------------------------------
+// [서버 삭제 함수] 🔥 추가된 부분
+// 설명: 특정 스케줄을 찾아 Firestore에서 영구 삭제
+// -----------------------------------------------------------------------------
+Future<void> deleteCalendarEventFromCloud({
+  required String userId,
+  required Schedule schedule,
+}) async {
+  final db = FirebaseFirestore.instance;
+  try {
+    final collectionRef = db
+        .collection('users')
+        .doc(userId)
+        .collection('calendar_data');
+
+    // 1. 저장할 때와 똑같은 규칙으로 ID를 재구성해서 찾음
+    String startString = schedule.startTime.toIso8601String();
+    String uniqueId = "${startString}_${schedule.title}";
+    uniqueId = uniqueId.replaceAll('/', '_');
+
+    // 2. 해당 문서 삭제
+    await collectionRef.doc(uniqueId).delete();
+
+    print("🗑️ 서버 삭제 완료: $uniqueId");
+
+  } catch (e) {
+    print("❌ 삭제 실패: $e");
+    throw Exception("삭제 중 오류 발생: $e");
+  }
+}
+
+// -----------------------------------------------------------------------------
+// [튜토리얼(예시) 상태 관리]
+// -----------------------------------------------------------------------------
+
+// 유저가 예시 일정을 이미 확인했는지(삭제했는지) 서버에서 확인
+Future<bool> checkTutorialStatus(String userId) async {
+  final db = FirebaseFirestore.instance;
+  // users 컬렉션의 해당 유저 문서 확인
+  final doc = await db.collection('users').doc(userId).get();
+
+  if (doc.exists && doc.data() != null) {
+    // 'tutorial_seen' 필드가 true면 이미 본 것임
+    return doc.data()!['tutorial_seen'] ?? false;
+  }
+  return false; // 문서가 없거나 필드가 없으면 안 본 것(false)
+}
+
+/// 유저가 예시 일정을 봤음(삭제함)을 서버에 영구 저장
+Future<void> markTutorialAsSeen(String userId) async {
+  final db = FirebaseFirestore.instance;
+  // users 컬렉션의 해당 유저 문서에 'tutorial_seen: true' 기록
+  await db.collection('users').doc(userId).set({
+    'tutorial_seen': true
+  }, SetOptions(merge: true)); // 기존 데이터(다른 정보)는 유지하고 병합
+}

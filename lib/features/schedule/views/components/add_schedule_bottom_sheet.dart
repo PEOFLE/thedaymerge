@@ -272,6 +272,7 @@ class _AddScheduleFormState extends State<_AddScheduleForm> {
           isExpanded: true,
           items: const [
             DropdownMenuItem(value: null, child: Text("알림 없음")),
+            DropdownMenuItem(value: -1, child: Text("즉시 (디버깅용)")), // Added Immediate
             DropdownMenuItem(value: 10, child: Text("10분 전")),
             DropdownMenuItem(value: 20, child: Text("20분 전")),
             DropdownMenuItem(value: 30, child: Text("30분 전")),

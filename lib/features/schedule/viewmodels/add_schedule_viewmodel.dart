@@ -4,7 +4,7 @@ class AddScheduleViewModel extends ChangeNotifier {
   late DateTime _startTime;
   late DateTime _endTime;
   
-  // 알림 옵션 (null = 없음, 정수 = 몇 분 전)
+  // 알림 옵션 (null = 없음, 정수 = 몇 분 전, -1 = 즉시)
   int? _alarmOffsetMinutes;
 
   DateTime get startTime => _startTime;
@@ -57,6 +57,10 @@ class AddScheduleViewModel extends ChangeNotifier {
   /// 실제 알람 시간 계산 (startTime - offset)
   DateTime? get calculatedAlarmTime {
     if (_alarmOffsetMinutes == null) return null;
+    // -1인 경우 즉시 알림 (현재 시간 + 5초 여유)
+    if (_alarmOffsetMinutes == -1) {
+      return DateTime.now().add(const Duration(seconds: 5));
+    }
     return _startTime.subtract(Duration(minutes: _alarmOffsetMinutes!));
   }
 }

@@ -7,6 +7,7 @@ import 'package:thedaymerge/features/schedule/models/schedule_model.dart';
 import 'package:thedaymerge/features/schedule/viewmodels/schedule_viewmodel.dart';
 import 'package:thedaymerge/features/schedule/views/components/calendar_component.dart';
 import 'package:thedaymerge/features/schedule/views/components/list_item_component.dart';
+import 'package:thedaymerge/features/schedule/views/components/add_schedule_bottom_sheet.dart';
 
 class DefaultHomePage extends StatefulWidget {
   const DefaultHomePage({super.key});
@@ -128,7 +129,13 @@ class _DefaultHomePageState extends State<DefaultHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          debugPrint("Add schedule clicked");
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => AddScheduleBottomSheet(
+              initialDate: viewModel.selectedDay,
+            ),
+          );
         },
         backgroundColor: AppColor.primaryColor,
         shape: const CircleBorder(),

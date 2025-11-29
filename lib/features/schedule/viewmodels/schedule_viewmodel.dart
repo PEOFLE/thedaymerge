@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import 'package:thedaymerge/features/schedule/models/schedule_model.dart';
@@ -19,7 +18,6 @@ class ScheduleViewModel extends ChangeNotifier {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
   bool _isAnalyzing = false;
-  final ImagePicker _picker = ImagePicker();
 
   // --- 3. Getters ---
   DateTime get focusedDay => _focusedDay;
@@ -86,24 +84,30 @@ class ScheduleViewModel extends ChangeNotifier {
     );
   }
 
+  Future<void> createSchedule({
+    required String scheduleName,
+    required DateTime startTime,
+    required DateTime endTime,
+  }) async {
+    await _repository.addSchedule(
+      scheduleName: scheduleName,
+      startTime: startTime,
+      endTime: endTime,
+      isAI: false,
+    );
+  }
+
   Future<void> deleteSchedule(String scheduleId) async {
     await _repository.deleteSchedule(scheduleId);
   }
   
   // For UploadPage
-  Future<String> pickAndAnalyzeImage() async {
+  Future<String> analyzeImage(String imagePath) async {
     _isAnalyzing = true;
     notifyListeners();
     
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image == null) {
-        _isAnalyzing = false;
-        notifyListeners();
-        return "이미지 선택이 취소되었습니다.";
-      }
-
-      final scheduleModel = await _aiRepository.analyzeImage(image.path);
+      final scheduleModel = await _aiRepository.analyzeImage(imagePath);
       
       if (scheduleModel != null) {
         await addSchedule(schedule: scheduleModel);

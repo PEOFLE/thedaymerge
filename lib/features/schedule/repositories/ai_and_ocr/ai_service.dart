@@ -58,7 +58,7 @@ class ScheduleAiRepository {
               "content": [
                 {
                   "type": "text",
-                  "text" : "너는 일정 추출 전문 AI야. 사용자의 입력에서 날짜와 이벤트를 추출해서 '일정명, 시작시간(DateTime)(없으면 null), 끝시간(DateTime)(없으면 null)' 형식으로만 답변해."
+                  "text" : "너는 일정 추출 전문 AI야. 사용자의 입력에서 날짜와 이벤트를 추출해서 'yyyy.mm.dd,카테고리' 형식으로만 답변해."
                 }
               ]
             },

@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+
 // ==========================================
 // [설정]
 // ==========================================
 const String apiUrl = 'https://clovastudio.stream.ntruss.com/v3/tasks/oi5sjiig/chat-completions';
-const String apiKey = 'api'; // ★★★ 여기에 API 키 입력 ★★★,
+const String apiKey = 'nv-d774ad029d1c47dfa4d61235b3148b0csRRX'; // ★★★ 여기에 API 키 입력 ★★★,
 // ==========================================
 
 
@@ -15,6 +16,8 @@ Future<String> getScheduleFromAI(String text) async {
   if (text.trim().isEmpty || text == "텍스트를 찾지 못했습니다." || text.startsWith("OCR 오류")) {
     return "AI 분석 중지: OCR에서 유효한 텍스트를 받지 못했습니다.";
   }
+
+  DateTime now = DateTime.now();
 
   // 2. 디버깅 코드 (콘솔 출력)
   print("==========================================");
@@ -39,7 +42,7 @@ Future<String> getScheduleFromAI(String text) async {
             "content": [
               {
                 "type": "text",
-                "text" : "너는 일정 추출 전문 AI야. 사용자의 입력에서 날짜와 이벤트를 추출해서 'YYYY.MM.DD,카테고리' 형식으로만 답변해."
+                "text" : "너는 일정 추출 전문 AI야. 오늘은 ${now.year}년 ${now.month}월 ${now.day}일이야. 사용자의 입력에서 날짜와 이벤트를 추출해서 'YYYY.MM.DD,카테고리' 형식으로만 답변해."
               }
             ]
           },

@@ -13,7 +13,6 @@ class AddScheduleBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 뷰모델의 스코프를 이 바텀시트로 한정
     return ChangeNotifierProvider(
       create: (_) => AddScheduleViewModel(initialDate: initialDate),
       child: const _AddScheduleForm(),
@@ -48,7 +47,6 @@ class _AddScheduleFormState extends State<_AddScheduleForm> {
     final viewModel = context.read<AddScheduleViewModel>();
     final initial = isStart ? viewModel.startTime : viewModel.endTime;
     
-    // 1. 날짜 선택
     final date = await showDatePicker(
       context: context,
       initialDate: initial,
@@ -60,7 +58,6 @@ class _AddScheduleFormState extends State<_AddScheduleForm> {
     if (date == null) return;
     if (!mounted) return;
 
-    // 2. 시간 선택
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(initial),
@@ -76,7 +73,6 @@ class _AddScheduleFormState extends State<_AddScheduleForm> {
       time.minute,
     );
 
-    // 3. ViewModel 업데이트
     if (isStart) {
       viewModel.updateStartTime(newDateTime);
     } else {
@@ -89,7 +85,6 @@ class _AddScheduleFormState extends State<_AddScheduleForm> {
 
     final addVm = context.read<AddScheduleViewModel>();
     
-    // 유효성 검사 로직은 ViewModel에 위임
     final error = addVm.validateTimes();
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -101,11 +96,11 @@ class _AddScheduleFormState extends State<_AddScheduleForm> {
       return;
     }
 
-    // 실제 데이터 생성은 Global ViewModel(ScheduleViewModel)에 요청
     context.read<ScheduleViewModel>().createSchedule(
       scheduleName: _nameController.text,
       startTime: addVm.startTime,
       endTime: addVm.endTime,
+      alarmTime: addVm.calculatedAlarmTime,
     );
     
     Navigator.pop(context);
@@ -141,6 +136,9 @@ class _AddScheduleFormState extends State<_AddScheduleForm> {
             const SizedBox(height: AppConstNumber.kMediumPadding),
             
             _buildTimeSelectionRow(context),
+            const SizedBox(height: AppConstNumber.kMediumPadding),
+            
+            _buildAlarmDropdown(context), // Added Alarm Dropdown
             const SizedBox(height: AppConstNumber.kLargePadding),
             
             _buildSaveButton(context),
@@ -187,7 +185,6 @@ class _AddScheduleFormState extends State<_AddScheduleForm> {
   }
 
   Widget _buildTimeSelectionRow(BuildContext context) {
-    // ViewModel 상태 구독
     final viewModel = context.watch<AddScheduleViewModel>();
 
     return Row(
@@ -251,6 +248,38 @@ class _AddScheduleFormState extends State<_AddScheduleForm> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildAlarmDropdown(BuildContext context) {
+    final viewModel = context.watch<AddScheduleViewModel>();
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppConstNumber.kMediumPadding),
+      decoration: BoxDecoration(
+        color: AppColor.inputFillColor,
+        borderRadius: BorderRadius.circular(AppConstNumber.kDefaultRadius),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int?>(
+          value: viewModel.alarmOffsetMinutes,
+          hint: const Text(
+            "알림 없음",
+            style: TextStyle(fontSize: AppConstNumber.kBodyFontSize, color: AppColor.textGrey),
+          ),
+          isExpanded: true,
+          items: const [
+            DropdownMenuItem(value: null, child: Text("알림 없음")),
+            DropdownMenuItem(value: 10, child: Text("10분 전")),
+            DropdownMenuItem(value: 20, child: Text("20분 전")),
+            DropdownMenuItem(value: 30, child: Text("30분 전")),
+            DropdownMenuItem(value: 60, child: Text("1시간 전")),
+          ], 
+          onChanged: (value) {
+            context.read<AddScheduleViewModel>().updateAlarmOffset(value);
+          },
         ),
       ),
     );

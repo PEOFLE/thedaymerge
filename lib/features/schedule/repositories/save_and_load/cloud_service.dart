@@ -25,21 +25,25 @@ class ScheduleRepository {
     });
   }
 
-  Future<void> addSchedule({
+  Future<String> addSchedule({
     required String scheduleName,
     required DateTime startTime,
     required DateTime endTime,
     bool isAI = false,
+    DateTime? alarmTime,
   }) async {
     final uid = _userId;
-    if (uid == null) return;
+    if (uid == null) throw Exception("User not logged in");
 
-    await _firestore.collection('users').doc(uid).collection('schedules').add({
+    final docRef = await _firestore.collection('users').doc(uid).collection('schedules').add({
       'scheduleName': scheduleName,
       'startTime': Timestamp.fromDate(startTime),
       'endTime': Timestamp.fromDate(endTime),
       'isAI': isAI,
+      'alarmTime': alarmTime != null ? Timestamp.fromDate(alarmTime) : null,
     });
+    
+    return docRef.id;
   }
 
   Future<void> deleteSchedule(String scheduleId) async {

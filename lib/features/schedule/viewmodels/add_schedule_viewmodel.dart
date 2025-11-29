@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class AddScheduleViewModel extends ChangeNotifier {
   late DateTime _startTime;
   late DateTime _endTime;
+  
+  // 알림 옵션 (null = 없음, 정수 = 몇 분 전)
+  int? _alarmOffsetMinutes;
 
   DateTime get startTime => _startTime;
   DateTime get endTime => _endTime;
+  int? get alarmOffsetMinutes => _alarmOffsetMinutes;
 
   AddScheduleViewModel({required DateTime initialDate}) {
     _initializeTimes(initialDate);
@@ -36,6 +40,11 @@ class AddScheduleViewModel extends ChangeNotifier {
     _endTime = newTime;
     notifyListeners();
   }
+  
+  void updateAlarmOffset(int? minutes) {
+    _alarmOffsetMinutes = minutes;
+    notifyListeners();
+  }
 
   /// 유효성 검사: 실패 시 에러 메시지 반환, 성공 시 null 반환
   String? validateTimes() {
@@ -43,5 +52,11 @@ class AddScheduleViewModel extends ChangeNotifier {
       return '종료 시간이 시작 시간보다 빠를 수 없습니다.';
     }
     return null;
+  }
+  
+  /// 실제 알람 시간 계산 (startTime - offset)
+  DateTime? get calculatedAlarmTime {
+    if (_alarmOffsetMinutes == null) return null;
+    return _startTime.subtract(Duration(minutes: _alarmOffsetMinutes!));
   }
 }

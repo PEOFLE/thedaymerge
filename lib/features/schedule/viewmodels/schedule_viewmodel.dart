@@ -5,10 +5,12 @@ import 'package:intl/intl.dart';
 import 'package:thedaymerge/features/schedule/models/schedule_model.dart';
 import 'package:thedaymerge/features/schedule/repositories/save_and_load/cloud_service.dart';
 import 'package:thedaymerge/features/schedule/repositories/ai_and_ocr/ai_service.dart';
+import 'package:thedaymerge/features/schedule/repositories/notification_service.dart';
 
 class ScheduleViewModel extends ChangeNotifier {
   final ScheduleRepository _repository;
   final ScheduleAiRepository _aiRepository;
+  final LocalNotificationService _notificationService = LocalNotificationService();
 
   // --- 1. Global Schedule State ---
   List<ScheduleModel> _allSchedules = [];
@@ -31,7 +33,12 @@ class ScheduleViewModel extends ChangeNotifier {
     required ScheduleAiRepository aiRepository,
   })  : _repository = repository,
         _aiRepository = aiRepository {
+    _initNotification();
     fetchSchedules();
+  }
+  
+  void _initNotification() async {
+    await _notificationService.init();
   }
 
   // --- 4. Business Logic ---
@@ -76,29 +83,55 @@ class ScheduleViewModel extends ChangeNotifier {
   }
 
   Future<void> addSchedule({required ScheduleModel schedule}) async {
-    await _repository.addSchedule(
+    // Save to DB
+    final id = await _repository.addSchedule(
       scheduleName: schedule.scheduleName,
       startTime: schedule.startTime,
       endTime: schedule.endTime,
       isAI: schedule.isAI,
+      alarmTime: schedule.alarmTime,
     );
+    
+    // Schedule Notification if alarmTime exists
+    if (schedule.alarmTime != null) {
+      await _notificationService.scheduleNotification(
+        id: id.hashCode, 
+        title: "일정 알림: ${schedule.scheduleName}",
+        body: "${DateFormat('HH:mm').format(schedule.startTime)}에 일정이 있습니다.",
+        scheduledTime: schedule.alarmTime!,
+      );
+    }
   }
 
   Future<void> createSchedule({
     required String scheduleName,
     required DateTime startTime,
     required DateTime endTime,
+    DateTime? alarmTime,
   }) async {
-    await _repository.addSchedule(
+    final id = await _repository.addSchedule(
       scheduleName: scheduleName,
       startTime: startTime,
       endTime: endTime,
       isAI: false,
+      alarmTime: alarmTime,
     );
+    
+    // Schedule Notification if alarmTime exists
+    if (alarmTime != null) {
+      await _notificationService.scheduleNotification(
+        id: id.hashCode, 
+        title: "일정 알림: $scheduleName",
+        body: "${DateFormat('HH:mm').format(startTime)}에 일정이 있습니다.",
+        scheduledTime: alarmTime,
+      );
+    }
   }
 
   Future<void> deleteSchedule(String scheduleId) async {
     await _repository.deleteSchedule(scheduleId);
+    // Cancel notification
+    await _notificationService.cancelNotification(scheduleId.hashCode);
   }
   
   // For UploadPage
